@@ -42,6 +42,7 @@
             this.LabelDatabase = new System.Windows.Forms.Label();
             this.PanelDatabase = new System.Windows.Forms.Panel();
             this.PanelBottomMid = new System.Windows.Forms.Panel();
+            this.ButtonAddTextFile = new System.Windows.Forms.Button();
             this.ButtonDeleteTextFile = new System.Windows.Forms.Button();
             this.ButtonSaveTextFile = new System.Windows.Forms.Button();
             this.PanelBottomRight = new System.Windows.Forms.Panel();
@@ -66,7 +67,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 21.37255F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 78.62745F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 445F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 447F));
             this.tableLayoutPanel1.Controls.Add(this.PanelTopLeft, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.PanelCategoryTables, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.PanelTextBox, 1, 1);
@@ -143,7 +144,7 @@
             this.PanelTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelTextBox.Location = new System.Drawing.Point(228, 96);
             this.PanelTextBox.Name = "PanelTextBox";
-            this.PanelTextBox.Size = new System.Drawing.Size(824, 482);
+            this.PanelTextBox.Size = new System.Drawing.Size(822, 482);
             this.PanelTextBox.TabIndex = 2;
             // 
             // RichTextBoxMain
@@ -152,7 +153,7 @@
             this.RichTextBoxMain.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.RichTextBoxMain.Location = new System.Drawing.Point(0, 0);
             this.RichTextBoxMain.Name = "RichTextBoxMain";
-            this.RichTextBoxMain.Size = new System.Drawing.Size(824, 482);
+            this.RichTextBoxMain.Size = new System.Drawing.Size(822, 482);
             this.RichTextBoxMain.TabIndex = 0;
             this.RichTextBoxMain.Text = "";
             // 
@@ -162,7 +163,7 @@
             this.PanelTopMid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelTopMid.Location = new System.Drawing.Point(228, 3);
             this.PanelTopMid.Name = "PanelTopMid";
-            this.PanelTopMid.Size = new System.Drawing.Size(824, 87);
+            this.PanelTopMid.Size = new System.Drawing.Size(822, 87);
             this.PanelTopMid.TabIndex = 3;
             // 
             // LabelEntryName
@@ -179,9 +180,9 @@
             // 
             this.PanelTopRight.Controls.Add(this.LabelDatabase);
             this.PanelTopRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelTopRight.Location = new System.Drawing.Point(1058, 3);
+            this.PanelTopRight.Location = new System.Drawing.Point(1056, 3);
             this.PanelTopRight.Name = "PanelTopRight";
-            this.PanelTopRight.Size = new System.Drawing.Size(440, 87);
+            this.PanelTopRight.Size = new System.Drawing.Size(442, 87);
             this.PanelTopRight.TabIndex = 4;
             // 
             // LabelDatabase
@@ -198,20 +199,32 @@
             // 
             this.PanelDatabase.AutoSize = true;
             this.PanelDatabase.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PanelDatabase.Location = new System.Drawing.Point(1058, 96);
+            this.PanelDatabase.Location = new System.Drawing.Point(1056, 96);
             this.PanelDatabase.Name = "PanelDatabase";
             this.PanelDatabase.Size = new System.Drawing.Size(0, 0);
             this.PanelDatabase.TabIndex = 20;
             // 
             // PanelBottomMid
             // 
+            this.PanelBottomMid.Controls.Add(this.ButtonAddTextFile);
             this.PanelBottomMid.Controls.Add(this.ButtonDeleteTextFile);
             this.PanelBottomMid.Controls.Add(this.ButtonSaveTextFile);
             this.PanelBottomMid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelBottomMid.Location = new System.Drawing.Point(228, 584);
             this.PanelBottomMid.Name = "PanelBottomMid";
-            this.PanelBottomMid.Size = new System.Drawing.Size(824, 30);
+            this.PanelBottomMid.Size = new System.Drawing.Size(822, 30);
             this.PanelBottomMid.TabIndex = 6;
+            // 
+            // ButtonAddTextFile
+            // 
+            this.ButtonAddTextFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ButtonAddTextFile.Location = new System.Drawing.Point(386, 0);
+            this.ButtonAddTextFile.Name = "ButtonAddTextFile";
+            this.ButtonAddTextFile.Size = new System.Drawing.Size(110, 30);
+            this.ButtonAddTextFile.TabIndex = 3;
+            this.ButtonAddTextFile.Text = "Add File";
+            this.ButtonAddTextFile.UseVisualStyleBackColor = true;
+            this.ButtonAddTextFile.Click += new System.EventHandler(this.ButtonAddTextFile_Click);
             // 
             // ButtonDeleteTextFile
             // 
@@ -240,9 +253,9 @@
             this.PanelBottomRight.Controls.Add(this.ButtonNewDBEntry);
             this.PanelBottomRight.Controls.Add(this.ButtonSaveDBEntry);
             this.PanelBottomRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelBottomRight.Location = new System.Drawing.Point(1058, 584);
+            this.PanelBottomRight.Location = new System.Drawing.Point(1056, 584);
             this.PanelBottomRight.Name = "PanelBottomRight";
-            this.PanelBottomRight.Size = new System.Drawing.Size(440, 30);
+            this.PanelBottomRight.Size = new System.Drawing.Size(442, 30);
             this.PanelBottomRight.TabIndex = 7;
             // 
             // ButtonDeleteDBEntry
@@ -345,6 +358,7 @@
         private System.Windows.Forms.Button ButtonSaveDBEntry;
         private System.Windows.Forms.Panel PanelBottomLeft;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button ButtonAddTextFile;
     }
 }
 

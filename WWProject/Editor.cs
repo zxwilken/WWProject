@@ -1,12 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.Windows.Forms;
 
@@ -18,7 +13,6 @@ namespace WWProject
 
         // Dictionary with Column name as the key for the RichTextBox holding data
         private Dictionary<string, RichTextBox> dictDBEntryData = new Dictionary<string, RichTextBox>();
-        // Dictionary for 
         private Dictionary<string, int> dictCategoryEntries = new Dictionary<string, int>();
 
         // current values
@@ -33,7 +27,7 @@ namespace WWProject
 
             EditorStartUp();
         }
-        // ---------------------------------------------------------------------------------------------------
+        // ###################################################################################################
 
         // May need parameter holding Server / Database info
         // Manages all of the setup required of the Editor
@@ -44,10 +38,11 @@ namespace WWProject
         {
             ComboBoxCategories.Items.AddRange(SqliteDataAccess.GetAllTables(false).ToArray());
             RichTextBoxMain.Enabled = false;
+            ButtonAddTextFile.Enabled = false;
 
             CheckFileSystem();
         }
-        // ---------------------------------------------------------------------------------------------------
+        // ###################################################################################################
 
         // Checks if the root directory for text files exists
         // if any directories are missing, a new one is created
@@ -62,7 +57,7 @@ namespace WWProject
             } 
             CreateFileSystem(path);
         }
-        // ---------------------------------------------------------------------------------------------------
+        // ###################################################################################################
 
         // Checks if category table directories exist,
         // if not, create a new one
@@ -76,8 +71,7 @@ namespace WWProject
                 }
             }
         }
-        // ---------------------------------------------------------------------------------------------------
-
+        // ###################################################################################################
 
         // Called by NewEntryForm when creating a new table entry
         // Calls a SqliteDataAccess method to start the process of creating new entry
@@ -108,11 +102,14 @@ namespace WWProject
                 // With Text File Address
                 tableID = SqliteDataAccess.AddTableEntry(categoryName, newEntryName, txtFileAddress);
                 currentTxtFileAddress = path + txtFileAddress;
+                ButtonAddTextFile.Enabled = false;
+                RichTextBoxMain.Enabled = true;
             }
             else
             {
                 tableID = SqliteDataAccess.AddTableEntry(categoryName, newEntryName);
                 RichTextBoxMain.Enabled = false;
+                ButtonAddTextFile.Enabled = true;
             }
 
             // Display new Entry in Editor
@@ -136,7 +133,7 @@ namespace WWProject
             cnn.Close();
             // ------------------------ Will eventually need to ask user if they want to save any updated data before creation of new entry -----------------
         }
-        // ---------------------------------------------------------------------------------------------------
+        // ###################################################################################################
 
         // If the selected drop down text changes, clear ListViewEntries
         // and fill it with entries from newely selected category
@@ -146,9 +143,8 @@ namespace WWProject
             dictCategoryEntries.Clear();
 
             SQLiteConnection cnn = new SQLiteConnection(SqliteDataAccess.LoadConnectionString());
-            cnn.Open();
-
             SQLiteDataReader dataReader;
+            cnn.Open();
             SQLiteCommand cmd = cnn.CreateCommand();
             cmd.CommandText = "SELECT " + ComboBoxCategories.Text + "ID,Name FROM " + ComboBoxCategories.Text;
             dataReader = cmd.ExecuteReader();
@@ -163,13 +159,12 @@ namespace WWProject
             cmd.Dispose();
             cnn.Close();
         }
-        // ---------------------------------------------------------------------------------------------------
+        // ###################################################################################################
 
         // If a entry in ListViewEntries is double clicked,
         // show it's data in the Database panel on right
         private void ListViewEntries_DoubleClick(object sender, EventArgs e)
         {
-
             List<string> columnNames = SqliteDataAccess.GetColumnAmount(ComboBoxCategories.Text);
 
             LabelEntryName.Text = ListViewEntries.SelectedItems[0].SubItems[0].Text;
@@ -184,9 +179,11 @@ namespace WWProject
             {
                 RichTextBoxMain.Clear();
                 RichTextBoxMain.Enabled = false;
+                ButtonAddTextFile.Enabled = true;
             } else
             {
                 RichTextBoxMain.Enabled = true;
+                ButtonAddTextFile.Enabled = false;
                 currentTxtFileAddress = Application.StartupPath + sqliteData.GetDatabaseName() + @"\" + address;
                 RichTextBoxMain.Text = File.ReadAllText(currentTxtFileAddress);
             }
@@ -194,7 +191,7 @@ namespace WWProject
             SQLiteConnection cnn = new SQLiteConnection(SqliteDataAccess.LoadConnectionString());
             cnn.Open();
             SQLiteCommand cmd = cnn.CreateCommand();
-
+            // create SQL statement to get all values from selected table
             cmd.CommandText = @"SELECT * FROM " + ComboBoxCategories.Text + " WHERE " + ComboBoxCategories.Text + "ID = " + dictCategoryEntries[ListViewEntries.SelectedItems[0].SubItems[0].Text];
 
             // Send SQLite command
@@ -203,7 +200,7 @@ namespace WWProject
             cmd.Dispose();
             cnn.Close();
         }
-        // ---------------------------------------------------------------------------------------------------
+        // ###################################################################################################
 
         // Method to display all data from relevant DB entry
         private void DynamTableEntries(List<string> columnNames, SQLiteCommand cmd)
@@ -259,7 +256,7 @@ namespace WWProject
                 }
             }
         }
-        // ---------------------------------------------------------------------------------------------------
+        // ###################################################################################################
 
         // Brings up a form to let user make new table entry
         private void ButtonNewDBEntry_Click(object sender, EventArgs e)
@@ -279,7 +276,7 @@ namespace WWProject
             // reactivate Editor form
             // delete NewEntryForm form
         }
-        // ---------------------------------------------------------------------------------------------------
+        // ###################################################################################################
 
         // Update currently selected DB entry with the current textbox values
         private void ButtonSaveDBEntry_Click(object sender, EventArgs e)
@@ -293,13 +290,34 @@ namespace WWProject
 
             SqliteDataAccess.UpdateSelectedDBEntry(currentTableName,currentEntryName,dict);
         }
-        // ---------------------------------------------------------------------------------------------------
+        // ###################################################################################################
 
         // Save textbox content to currently open text file
         private void ButtonSaveTextFile_Click(object sender, EventArgs e)
         {
             File.WriteAllText(currentTxtFileAddress, RichTextBoxMain.Text);
         }
-        // ---------------------------------------------------------------------------------------------------
+
+        // 
+        private void ButtonAddTextFile_Click(object sender, EventArgs e)
+        {
+            currentTxtFileAddress = Application.StartupPath + sqliteData.GetDatabaseName() + @"\" + currentTableName + @"\" + currentEntryName + ".txt";
+            string entryAddress = currentTableName + @"\" + currentEntryName + ".txt";
+            // Create new text file
+            FileStream fs = File.Create(currentTxtFileAddress);
+            // make sure new text file exists
+            if (!File.Exists(currentTxtFileAddress))
+            {
+                MessageBox.Show("File was not created.");
+                return;
+            }
+            fs.Close();
+            int entryID = SqliteDataAccess.GetEntryID(currentTableName, currentEntryName);
+            SqliteDataAccess.UpdateEntryFileAddress(entryID, entryAddress);
+            //Enable main text box, disable button to create new file
+            RichTextBoxMain.Enabled = true;
+            ButtonAddTextFile.Enabled = false;
+        }
+        // ###################################################################################################
     }
 }

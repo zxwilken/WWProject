@@ -1,12 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.Windows.Forms;
 
@@ -61,11 +53,10 @@ namespace WWProject
                     return;
                 }
             }
-
-
             editor.GetNewEntryValues(CheckBoxAddFile.Checked, ComboBoxCategories.Text,TextBoxEntryName.Text);
             this.Close();
         }
+        // ###################################################################################################
 
         // Reactive Editor Form upon NewEntryForm closing
         private void NewEntryForm_FormClosed(object sender, FormClosedEventArgs e)
