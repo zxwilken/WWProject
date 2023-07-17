@@ -50,7 +50,9 @@
             this.ButtonNewDBEntry = new System.Windows.Forms.Button();
             this.ButtonSaveDBEntry = new System.Windows.Forms.Button();
             this.PanelBottomLeft = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
+            this.ButtonEditTable = new System.Windows.Forms.Button();
+            this.ButtonNewCategory = new System.Windows.Forms.Button();
+            this.TextboxSearch = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.PanelTopLeft.SuspendLayout();
             this.PanelCategoryTables.SuspendLayout();
@@ -67,7 +69,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 21.37255F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 78.62745F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 447F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 452F));
             this.tableLayoutPanel1.Controls.Add(this.PanelTopLeft, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.PanelCategoryTables, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.PanelTextBox, 1, 1);
@@ -81,8 +83,8 @@
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.10738F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 83.89262F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.1136F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 85.88641F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1501, 617);
             this.tableLayoutPanel1.TabIndex = 0;
@@ -93,14 +95,14 @@
             this.PanelTopLeft.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelTopLeft.Location = new System.Drawing.Point(3, 3);
             this.PanelTopLeft.Name = "PanelTopLeft";
-            this.PanelTopLeft.Size = new System.Drawing.Size(219, 87);
+            this.PanelTopLeft.Size = new System.Drawing.Size(218, 76);
             this.PanelTopLeft.TabIndex = 0;
             // 
             // LabelCategories
             // 
             this.LabelCategories.AutoSize = true;
             this.LabelCategories.Font = new System.Drawing.Font("Segoe UI", 14F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LabelCategories.Location = new System.Drawing.Point(55, 62);
+            this.LabelCategories.Location = new System.Drawing.Point(57, 46);
             this.LabelCategories.Name = "LabelCategories";
             this.LabelCategories.Size = new System.Drawing.Size(106, 25);
             this.LabelCategories.TabIndex = 0;
@@ -108,21 +110,22 @@
             // 
             // PanelCategoryTables
             // 
+            this.PanelCategoryTables.Controls.Add(this.TextboxSearch);
             this.PanelCategoryTables.Controls.Add(this.ListViewEntries);
             this.PanelCategoryTables.Controls.Add(this.ComboBoxCategories);
             this.PanelCategoryTables.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelCategoryTables.Location = new System.Drawing.Point(3, 96);
+            this.PanelCategoryTables.Location = new System.Drawing.Point(3, 85);
             this.PanelCategoryTables.Name = "PanelCategoryTables";
-            this.PanelCategoryTables.Size = new System.Drawing.Size(219, 482);
+            this.PanelCategoryTables.Size = new System.Drawing.Size(218, 493);
             this.PanelCategoryTables.TabIndex = 1;
             // 
             // ListViewEntries
             // 
             this.ListViewEntries.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ListViewEntries.HideSelection = false;
-            this.ListViewEntries.Location = new System.Drawing.Point(9, 64);
+            this.ListViewEntries.Location = new System.Drawing.Point(9, 87);
             this.ListViewEntries.Name = "ListViewEntries";
-            this.ListViewEntries.Size = new System.Drawing.Size(197, 381);
+            this.ListViewEntries.Size = new System.Drawing.Size(197, 403);
             this.ListViewEntries.TabIndex = 1;
             this.ListViewEntries.UseCompatibleStateImageBehavior = false;
             this.ListViewEntries.View = System.Windows.Forms.View.List;
@@ -132,19 +135,20 @@
             // 
             this.ComboBoxCategories.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ComboBoxCategories.FormattingEnabled = true;
-            this.ComboBoxCategories.Location = new System.Drawing.Point(9, 27);
+            this.ComboBoxCategories.Location = new System.Drawing.Point(9, 50);
             this.ComboBoxCategories.Name = "ComboBoxCategories";
             this.ComboBoxCategories.Size = new System.Drawing.Size(197, 28);
             this.ComboBoxCategories.TabIndex = 0;
+            this.ComboBoxCategories.SelectedIndexChanged += new System.EventHandler(this.ComboBoxCategories_SelectedIndexChanged);
             this.ComboBoxCategories.TextChanged += new System.EventHandler(this.ComboBoxCategories_TextChanged);
             // 
             // PanelTextBox
             // 
             this.PanelTextBox.Controls.Add(this.RichTextBoxMain);
             this.PanelTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelTextBox.Location = new System.Drawing.Point(228, 96);
+            this.PanelTextBox.Location = new System.Drawing.Point(227, 85);
             this.PanelTextBox.Name = "PanelTextBox";
-            this.PanelTextBox.Size = new System.Drawing.Size(822, 482);
+            this.PanelTextBox.Size = new System.Drawing.Size(818, 493);
             this.PanelTextBox.TabIndex = 2;
             // 
             // RichTextBoxMain
@@ -153,7 +157,7 @@
             this.RichTextBoxMain.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.RichTextBoxMain.Location = new System.Drawing.Point(0, 0);
             this.RichTextBoxMain.Name = "RichTextBoxMain";
-            this.RichTextBoxMain.Size = new System.Drawing.Size(822, 482);
+            this.RichTextBoxMain.Size = new System.Drawing.Size(818, 493);
             this.RichTextBoxMain.TabIndex = 0;
             this.RichTextBoxMain.Text = "";
             // 
@@ -161,16 +165,16 @@
             // 
             this.PanelTopMid.Controls.Add(this.LabelEntryName);
             this.PanelTopMid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelTopMid.Location = new System.Drawing.Point(228, 3);
+            this.PanelTopMid.Location = new System.Drawing.Point(227, 3);
             this.PanelTopMid.Name = "PanelTopMid";
-            this.PanelTopMid.Size = new System.Drawing.Size(822, 87);
+            this.PanelTopMid.Size = new System.Drawing.Size(818, 76);
             this.PanelTopMid.TabIndex = 3;
             // 
             // LabelEntryName
             // 
             this.LabelEntryName.AutoSize = true;
             this.LabelEntryName.Font = new System.Drawing.Font("Segoe UI", 20F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LabelEntryName.Location = new System.Drawing.Point(379, 48);
+            this.LabelEntryName.Location = new System.Drawing.Point(377, 36);
             this.LabelEntryName.Name = "LabelEntryName";
             this.LabelEntryName.Size = new System.Drawing.Size(73, 37);
             this.LabelEntryName.TabIndex = 1;
@@ -180,16 +184,16 @@
             // 
             this.PanelTopRight.Controls.Add(this.LabelDatabase);
             this.PanelTopRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelTopRight.Location = new System.Drawing.Point(1056, 3);
+            this.PanelTopRight.Location = new System.Drawing.Point(1051, 3);
             this.PanelTopRight.Name = "PanelTopRight";
-            this.PanelTopRight.Size = new System.Drawing.Size(442, 87);
+            this.PanelTopRight.Size = new System.Drawing.Size(447, 76);
             this.PanelTopRight.TabIndex = 4;
             // 
             // LabelDatabase
             // 
             this.LabelDatabase.AutoSize = true;
             this.LabelDatabase.Font = new System.Drawing.Font("Segoe UI", 14F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LabelDatabase.Location = new System.Drawing.Point(177, 60);
+            this.LabelDatabase.Location = new System.Drawing.Point(192, 48);
             this.LabelDatabase.Name = "LabelDatabase";
             this.LabelDatabase.Size = new System.Drawing.Size(93, 25);
             this.LabelDatabase.TabIndex = 1;
@@ -199,7 +203,7 @@
             // 
             this.PanelDatabase.AutoSize = true;
             this.PanelDatabase.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PanelDatabase.Location = new System.Drawing.Point(1056, 96);
+            this.PanelDatabase.Location = new System.Drawing.Point(1051, 85);
             this.PanelDatabase.Name = "PanelDatabase";
             this.PanelDatabase.Size = new System.Drawing.Size(0, 0);
             this.PanelDatabase.TabIndex = 20;
@@ -210,15 +214,15 @@
             this.PanelBottomMid.Controls.Add(this.ButtonDeleteTextFile);
             this.PanelBottomMid.Controls.Add(this.ButtonSaveTextFile);
             this.PanelBottomMid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelBottomMid.Location = new System.Drawing.Point(228, 584);
+            this.PanelBottomMid.Location = new System.Drawing.Point(227, 584);
             this.PanelBottomMid.Name = "PanelBottomMid";
-            this.PanelBottomMid.Size = new System.Drawing.Size(822, 30);
+            this.PanelBottomMid.Size = new System.Drawing.Size(818, 30);
             this.PanelBottomMid.TabIndex = 6;
             // 
             // ButtonAddTextFile
             // 
             this.ButtonAddTextFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ButtonAddTextFile.Location = new System.Drawing.Point(386, 0);
+            this.ButtonAddTextFile.Location = new System.Drawing.Point(191, 0);
             this.ButtonAddTextFile.Name = "ButtonAddTextFile";
             this.ButtonAddTextFile.Size = new System.Drawing.Size(110, 30);
             this.ButtonAddTextFile.TabIndex = 3;
@@ -229,7 +233,7 @@
             // ButtonDeleteTextFile
             // 
             this.ButtonDeleteTextFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ButtonDeleteTextFile.Location = new System.Drawing.Point(666, 0);
+            this.ButtonDeleteTextFile.Location = new System.Drawing.Point(414, 0);
             this.ButtonDeleteTextFile.Name = "ButtonDeleteTextFile";
             this.ButtonDeleteTextFile.Size = new System.Drawing.Size(75, 30);
             this.ButtonDeleteTextFile.TabIndex = 2;
@@ -239,7 +243,7 @@
             // ButtonSaveTextFile
             // 
             this.ButtonSaveTextFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ButtonSaveTextFile.Location = new System.Drawing.Point(569, 0);
+            this.ButtonSaveTextFile.Location = new System.Drawing.Point(564, 0);
             this.ButtonSaveTextFile.Name = "ButtonSaveTextFile";
             this.ButtonSaveTextFile.Size = new System.Drawing.Size(75, 30);
             this.ButtonSaveTextFile.TabIndex = 0;
@@ -253,15 +257,15 @@
             this.PanelBottomRight.Controls.Add(this.ButtonNewDBEntry);
             this.PanelBottomRight.Controls.Add(this.ButtonSaveDBEntry);
             this.PanelBottomRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelBottomRight.Location = new System.Drawing.Point(1056, 584);
+            this.PanelBottomRight.Location = new System.Drawing.Point(1051, 584);
             this.PanelBottomRight.Name = "PanelBottomRight";
-            this.PanelBottomRight.Size = new System.Drawing.Size(442, 30);
+            this.PanelBottomRight.Size = new System.Drawing.Size(447, 30);
             this.PanelBottomRight.TabIndex = 7;
             // 
             // ButtonDeleteDBEntry
             // 
             this.ButtonDeleteDBEntry.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ButtonDeleteDBEntry.Location = new System.Drawing.Point(345, 0);
+            this.ButtonDeleteDBEntry.Location = new System.Drawing.Point(210, 0);
             this.ButtonDeleteDBEntry.Name = "ButtonDeleteDBEntry";
             this.ButtonDeleteDBEntry.Size = new System.Drawing.Size(75, 30);
             this.ButtonDeleteDBEntry.TabIndex = 4;
@@ -271,7 +275,7 @@
             // ButtonNewDBEntry
             // 
             this.ButtonNewDBEntry.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ButtonNewDBEntry.Location = new System.Drawing.Point(47, 0);
+            this.ButtonNewDBEntry.Location = new System.Drawing.Point(33, 0);
             this.ButtonNewDBEntry.Name = "ButtonNewDBEntry";
             this.ButtonNewDBEntry.Size = new System.Drawing.Size(80, 30);
             this.ButtonNewDBEntry.TabIndex = 1;
@@ -282,7 +286,7 @@
             // ButtonSaveDBEntry
             // 
             this.ButtonSaveDBEntry.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ButtonSaveDBEntry.Location = new System.Drawing.Point(248, 0);
+            this.ButtonSaveDBEntry.Location = new System.Drawing.Point(346, 0);
             this.ButtonSaveDBEntry.Name = "ButtonSaveDBEntry";
             this.ButtonSaveDBEntry.Size = new System.Drawing.Size(75, 30);
             this.ButtonSaveDBEntry.TabIndex = 3;
@@ -292,22 +296,45 @@
             // 
             // PanelBottomLeft
             // 
-            this.PanelBottomLeft.Controls.Add(this.button1);
+            this.PanelBottomLeft.Controls.Add(this.ButtonEditTable);
+            this.PanelBottomLeft.Controls.Add(this.ButtonNewCategory);
             this.PanelBottomLeft.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelBottomLeft.Location = new System.Drawing.Point(3, 584);
             this.PanelBottomLeft.Name = "PanelBottomLeft";
-            this.PanelBottomLeft.Size = new System.Drawing.Size(219, 30);
+            this.PanelBottomLeft.Size = new System.Drawing.Size(218, 30);
             this.PanelBottomLeft.TabIndex = 8;
             // 
-            // button1
+            // ButtonEditTable
             // 
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(60, 0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(110, 30);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "New Category";
-            this.button1.UseVisualStyleBackColor = true;
+            this.ButtonEditTable.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ButtonEditTable.Location = new System.Drawing.Point(128, 0);
+            this.ButtonEditTable.Name = "ButtonEditTable";
+            this.ButtonEditTable.Size = new System.Drawing.Size(87, 30);
+            this.ButtonEditTable.TabIndex = 2;
+            this.ButtonEditTable.Text = "Edit Table";
+            this.ButtonEditTable.UseVisualStyleBackColor = true;
+            this.ButtonEditTable.Click += new System.EventHandler(this.ButtonEditTable_Click);
+            // 
+            // ButtonNewCategory
+            // 
+            this.ButtonNewCategory.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ButtonNewCategory.Location = new System.Drawing.Point(3, 0);
+            this.ButtonNewCategory.Name = "ButtonNewCategory";
+            this.ButtonNewCategory.Size = new System.Drawing.Size(110, 30);
+            this.ButtonNewCategory.TabIndex = 2;
+            this.ButtonNewCategory.Text = "New Category";
+            this.ButtonNewCategory.UseVisualStyleBackColor = true;
+            this.ButtonNewCategory.Click += new System.EventHandler(this.ButtonNewCategory_Click);
+            // 
+            // TextboxSearch
+            // 
+            this.TextboxSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TextboxSearch.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.TextboxSearch.Location = new System.Drawing.Point(12, 18);
+            this.TextboxSearch.Name = "TextboxSearch";
+            this.TextboxSearch.Size = new System.Drawing.Size(194, 26);
+            this.TextboxSearch.TabIndex = 2;
+            this.TextboxSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextboxSearch_KeyPress);
             // 
             // Editor
             // 
@@ -322,6 +349,7 @@
             this.PanelTopLeft.ResumeLayout(false);
             this.PanelTopLeft.PerformLayout();
             this.PanelCategoryTables.ResumeLayout(false);
+            this.PanelCategoryTables.PerformLayout();
             this.PanelTextBox.ResumeLayout(false);
             this.PanelTopMid.ResumeLayout(false);
             this.PanelTopMid.PerformLayout();
@@ -341,7 +369,6 @@
         private System.Windows.Forms.Label LabelCategories;
         private System.Windows.Forms.Panel PanelCategoryTables;
         private System.Windows.Forms.ListView ListViewEntries;
-        private System.Windows.Forms.ComboBox ComboBoxCategories;
         private System.Windows.Forms.Panel PanelTextBox;
         private System.Windows.Forms.RichTextBox RichTextBoxMain;
         private System.Windows.Forms.Panel PanelTopMid;
@@ -357,8 +384,11 @@
         private System.Windows.Forms.Button ButtonDeleteDBEntry;
         private System.Windows.Forms.Button ButtonSaveDBEntry;
         private System.Windows.Forms.Panel PanelBottomLeft;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button ButtonNewCategory;
         private System.Windows.Forms.Button ButtonAddTextFile;
+        private System.Windows.Forms.Button ButtonEditTable;
+        public System.Windows.Forms.ComboBox ComboBoxCategories;
+        private System.Windows.Forms.TextBox TextboxSearch;
     }
 }
 

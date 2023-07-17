@@ -34,3 +34,4 @@ C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\ob
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.csproj.CopyComplete
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.exe
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.pdb
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.TableForm.resources

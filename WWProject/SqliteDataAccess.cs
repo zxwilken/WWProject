@@ -3,23 +3,13 @@ using System.Linq;
 using System.Configuration;
 using System.Data;
 using System.Data.SQLite;
+
 //using Dapper;
 
 namespace WWProject
 {
     internal class SqliteDataAccess
     {
-        // Temporary hardcoding DB name
-        private string databaseName;
-
-        public SqliteDataAccess()
-        {
-            databaseName = "WorldDB";
-        }
-        public string GetDatabaseName()
-        {
-            return databaseName;
-        }
 
         /*public static List<string> LoadPP()
         {
@@ -49,8 +39,7 @@ namespace WWProject
         // ###################################################################################################
 
 
-        // Takes a Table name as a parameter, Returns the amount of columns that table has
-        // Mainly used for displaying the right amount of labels & Rich-Textboxes
+        // Takes a Table name as a parameter, Returns the columns names of given table
         public static List<string> GetColumnAmount(string tableName)
         {
             List<string> columnNames = new List<string>();
@@ -147,14 +136,25 @@ namespace WWProject
 
 
         // Get all entry IDs and Names from a table
-        public static Dictionary<string, int> GetEntryIdAndName(string tableName)
+        public static Dictionary<string, int> GetTableEntryIdAndName(string tableName)
         {
             Dictionary<string, int> dictCategoryEntries = new Dictionary<string, int>();
             // Create and open connection to local SQLite DB
             SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            SQLiteDataReader dataReader;
             cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
 
-            // NEED TO FINISH
+            cmd.CommandText = "SELECT " + tableName + "ID,Name FROM " + tableName;
+           dataReader = cmd.ExecuteReader();
+
+            while (dataReader.Read())
+            {
+                dictCategoryEntries.Add(dataReader.GetString(1), dataReader.GetInt32(0));
+                //ListViewEntries.Items.Add(dataReader.GetString(1));
+            }
+
+            dataReader.Close();
             cnn.Close();
             return dictCategoryEntries;
         }
@@ -313,13 +313,9 @@ namespace WWProject
             foreach(KeyValuePair<string, string> kvp in dictDBEntryData)
             {
                 if (kvp.Key == last)
-                {
                     cmd.CommandText += $"{kvp.Key} = '{kvp.Value}' ";
-                } else
-                {
-                    cmd.CommandText += $"{kvp.Key} = '{kvp.Value}', ";
-                }
-                
+                else
+                    cmd.CommandText += $"{kvp.Key} = '{kvp.Value}', ";                
             }
             cmd.CommandText += "WHERE Name = '" + entryName + "';";
 
@@ -367,8 +363,34 @@ namespace WWProject
         }
         // ###################################################################################################
 
+        // Gets table name from given EntryID
+        // Currently used when searching all DB entries
+        public static string GetTableNameFromEntryID(int entryID)
+        {
+            string tableName = null;
 
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            SQLiteDataReader dataReader;
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
 
+            cmd.CommandText = "SELECT Name FROM LUTables WHERE TableID = (SELECT TableID FROM Entries WHERE EntryID = " + entryID + ");";
+            dataReader = cmd.ExecuteReader();
+
+            while (dataReader.Read())
+            {
+                tableName = dataReader.GetString(0);
+            }
+
+            cmd.Dispose();
+            dataReader.Close();
+            cnn.Close();
+
+            return tableName;
+        }
+        // ###################################################################################################
+
+        //
         public static void UpdateEntryFileAddress(int entryID,string textAddress)
         {
             SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
@@ -383,6 +405,181 @@ namespace WWProject
             dataReader.Close();
             cnn.Close();
         }
+        // ###################################################################################################
 
+
+        //
+        public static void AddNewTable(string tableName,List<string> columnNames)
+        {
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            SQLiteDataReader dataReader;
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            cmd.CommandText = "CREATE TABLE '" + tableName + "' ( '" + tableName + "ID' INTEGER NOT NULL UNIQUE, ";
+            cmd.CommandText += "'EntryID' INTEGER NOT NULL, ";
+            cmd.CommandText += "'Name' TEXT NOT NULL, ";
+
+            foreach(string column in columnNames)
+            {
+                cmd.CommandText += "'" + column + "' TEXT, ";
+            }
+            cmd.CommandText += "PRIMARY KEY('" + tableName + "ID' AUTOINCREMENT));";
+            dataReader=cmd.ExecuteReader();
+
+            cmd.Dispose();
+            dataReader.Close();
+            cnn.Close();
+
+            AddToLUTables(tableName);
+        }
+        // ###################################################################################################
+
+        //
+        private static void AddToLUTables(string tableName)
+        {
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            SQLiteDataReader dataReader;
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            cmd.CommandText = "INSERT INTO LUTABLES (NAME) VALUES ('" + tableName + "');";
+            dataReader = cmd.ExecuteReader();
+
+            cmd.Dispose();
+            dataReader.Close();
+            cnn.Close();
+        }
+        // ###################################################################################################
+
+
+        // Change a table name, primary key name, and related entry in LUTABLES
+        public static void EditTableName(string oldName, string newName)
+        {
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            cmd.CommandText = "ALTER TABLE " + oldName + " RENAME TO " + newName + ";";
+            cmd.ExecuteReader();
+            cmd.Dispose();
+
+            cmd.CommandText = "ALTER TABLE " + newName + " RENAME COLUMN " + oldName + "ID TO " + newName + "ID;";
+            cmd.ExecuteReader();
+            cmd.Dispose();
+
+            cmd.CommandText = "UPDATE LUTABLES SET NAME = '" + newName + "' WHERE NAME = '" + oldName + "';";
+            cmd.ExecuteReader();
+            cmd.Dispose();
+
+            cnn.Close();
+        }
+        // ###################################################################################################
+
+
+        //
+        public static void EditTableColumns(Dictionary<string,string> columns,string tableName)
+        {
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            SQLiteDataReader dataReader;
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            string last = columns.Keys.Last();
+
+            /*cmd.CommandText = "ALTER TABLE " + tableName + " RENAME COLUMN ";
+            foreach(KeyValuePair<string,string> column in columns)
+            {
+                if (column.Key == last)
+                    cmd.CommandText += column.Key + " TO " + column.Value + ";";
+                else  
+                    cmd.CommandText += column.Key + " TO " + column.Value + ", "; 
+            }*/
+
+            foreach(KeyValuePair<string, string> column in columns)
+            {
+                cmd.CommandText = "ALTER TABLE " + tableName + " RENAME COLUMN " + column.Key + " TO " + column.Value + ";";
+                cmd.ExecuteReader();
+                cmd.Dispose();
+            }
+
+            //dataReader = cmd.ExecuteReader();
+
+            cmd.Dispose();
+            //dataReader.Close();
+            cnn.Close();
+        }
+
+        public static void AddNewColumns(List<string> newColumns,string tableName)
+        {
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            SQLiteDataReader dataReader;
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            string last = newColumns.Last();
+
+            cmd.CommandText = "ALTER TABLE " + tableName + " ADD COLUMN ";
+            foreach(string column in newColumns)
+            {
+                if (column == last)
+                    cmd.CommandText += column + " TEXT;";
+                else
+                    cmd.CommandText += column + " TEXT,";
+            }
+            dataReader = cmd.ExecuteReader();
+
+            cmd.Dispose();
+            dataReader.Close();
+            cnn.Close();
+        }
+
+        // Checks if given string matches existing table name
+        public static bool CheckIfTableExists(string name)
+        {
+            foreach(string n in GetAllTables(true))
+            {
+                if (name.ToLower().Equals(n.ToLower()))
+                {
+                    System.Windows.Forms.MessageBox.Show("Table Name: " + name + "  Is Already Taken.");
+                    return false;
+                }
+            }
+            return true;
+        }
+        // ###################################################################################################
+
+        //
+        public static Dictionary<string, int> SearchBarGetEntries(string userEntry)
+        {
+            Dictionary<string, int> entries = new Dictionary<string, int>();
+
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            SQLiteDataReader dataReader;
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            cmd.CommandText = "SELECT Name, EntryID FROM Entries WHERE Name Like '%" + userEntry + "%';";
+            dataReader = cmd.ExecuteReader();
+
+            while (dataReader.Read())
+            {
+                entries.Add(dataReader.GetString(0),dataReader.GetInt32(1));
+            }
+
+            return entries;
+        }
+
+
+        // Checks If user input is made of standard characters.
+        // ADD TO A SEPERATE CLASS
+        public static bool CheckUserInput(string userInput)
+        {
+            if (userInput.All(char.IsLetterOrDigit))
+            {
+                return true;
+            } else return false;
+        }
+        // ###################################################################################################
     }
 }
