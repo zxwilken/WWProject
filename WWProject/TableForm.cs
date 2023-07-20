@@ -11,33 +11,16 @@ using System.Windows.Forms;
 namespace WWProject
 {
 
-    
-    // Create New Table
-    //  Put all additional column names in  TableColumns  list
-    //  Put textbox.text in another list that will be sent to SQL command
-    //  for creating new table
-    
-    // SQL order for New Table
-    //  1. create new table
-    //  2. Add new table name into LUTables
-    //  3. update/refresh Editor dropdown
-
-    // Edit Existing Table
-    //  Display each existing Column name in a TextBox, set as disabled
-    //  On submittion, put each undisabled original column that has been edited in a Dictionary.
-    //  Do one UPDATE SQL making those changes.
-    //  2nd UPDATE with any new table columns
-
-
     public partial class TableForm : Form
     {
         Editor editorForm;
 
         // Editing existing table
         private Dictionary<CheckBox, TextBox> originalTableColumns;
-        private List<Button> RemoveOriginalColumnButtonList;
+        private List<Button> removeOriginalColumnButtonList;
         private List<string> originalColumnNames;
-        private List<string> originalColumnsToDelete;
+        private List<int> originalColumnsToDelete;
+        //private bool originalColumnDeleted = false;
         string originalTableName;
         private ComboBox dropdownTables;
         private TextBox tableNameToEdit;
@@ -47,7 +30,7 @@ namespace WWProject
         private int contentY;
         private bool isNewTable;
         private TextBox newTableName;
-        private int textBoxMaxNumber;
+        private const int TEXTBOX_MAX_NUMBER = 8;
 
         //
         public TableForm(Editor ed,bool creatingTable)
@@ -55,7 +38,6 @@ namespace WWProject
             InitializeComponent();
 
             contentY = LabelCategoryName.Bottom + 10;
-            textBoxMaxNumber = 8;
             isNewTable = creatingTable;
             editorForm = ed;
             if (isNewTable)
@@ -67,9 +49,9 @@ namespace WWProject
             {
                 this.Text = "Edit Table";
                 originalTableColumns = new Dictionary<CheckBox, TextBox>();
-                RemoveOriginalColumnButtonList = new List<Button>();
+                removeOriginalColumnButtonList = new List<Button>();
                 originalColumnNames = new List<string>();
-                originalColumnsToDelete = new List<string>();
+                originalColumnsToDelete = new List<int>();
                 originalTableName = "";
                 EditTableStartup();
             }
@@ -96,7 +78,7 @@ namespace WWProject
             dropdownTables.Font = new Font("Microsoft Sans Serif", 12);
             //categoryNames.SelectedIndex = 0;
             dropdownTables.Location = new Point(PanelName.Width / 2 - dropdownTables.Width / 2, LabelTableName.Bottom + 10);
-            dropdownTables.TextChanged += ComboBoxCategryNames_TextChanged;
+            dropdownTables.SelectedIndexChanged += ComboBoxCategoryNames_SelectedIndexChanged;
 
             Button buttonEditName = new Button();
             buttonEditName.Font = new Font("Microsoft Sans Serif", 12);
@@ -158,6 +140,7 @@ namespace WWProject
                 richText.Enabled = false;
                 // create checkbox object
                 CreateCheckBox(richText);
+                CreateDeleteColumnButton(richText);
             }else
             {
                 newTableColumns.Add(richText);
@@ -190,21 +173,36 @@ namespace WWProject
         // ###################################################################################################
 
         //
-        private void CreateCheckBox(TextBox richText)
+        private void CreateCheckBox(TextBox textBox)
         {
             CheckBox checkBox = new CheckBox();
             checkBox.Text = "";
             checkBox.Width = 15;
-            checkBox.Location = new Point(richText.Right + checkBox.Width / 2, richText.Top);
+            checkBox.Location = new Point(textBox.Right + checkBox.Width / 2, textBox.Top);
             checkBox.Checked = true;
 
             checkBox.CheckedChanged += TextBoxStatus_CheckedChanged;
             PanelContent.Controls.Add(checkBox);
-            originalTableColumns.Add(checkBox,richText);
+            originalTableColumns.Add(checkBox, textBox);
 
         }
         // ###################################################################################################
 
+        // Add button for deleting a Table column 
+        private void CreateDeleteColumnButton(TextBox textBox)
+        {
+            Button deleteButton = new Button();
+            deleteButton.Text = "Delete";
+            deleteButton.Width = 50;
+            deleteButton.Location = new Point(textBox.Left - deleteButton.Width - 15,textBox.Top);
+
+            // add event method
+            deleteButton.Click += ColumnDeleteButton_Click;
+            PanelContent.Controls.Add(deleteButton);
+            removeOriginalColumnButtonList.Add(deleteButton);
+            // 
+        }
+        // ###################################################################################################
 
         //
         private bool CheckSubmittedColumns()
@@ -280,13 +278,15 @@ namespace WWProject
         // ###################################################################################################
 
 
-        //
+        // When editing a table.
+        // After submit button is clicked, this will check for valid inputs and whether certain
+        // parts of the table have been edited or deleted, changing the resulting SQL command
         private bool SubmitEditedTable()
         {
             bool tableNameEdited = false;
             bool originalColumnsEdited = false;
-            bool originalColumnDeleted = false;
             bool newColumnsEdited = false;
+            bool deletingColumns = false;
 
             List<string> badInputs = new List<string>();
             List<string> newGoodInputs = new List<string>();
@@ -313,10 +313,15 @@ namespace WWProject
                 }
                 tableNameEdited = true;
             }
-            
+
             // if an Original column has been edited or empty
-            for(int i = 0; i < originalTableColumns.Count; i++)
+            for (int i = 0; i < originalTableColumns.Count; i++)
             {
+                // checks if the current loops index matches one of the columns chosen to be deleted,
+                if (originalColumnsToDelete.Contains(i))
+                    continue; 
+
+                
                 if (!SqliteDataAccess.CheckUserInput(originalTableColumns.ElementAt(i).Value.Text) || originalTableColumns.ElementAt(i).Value.Text == "")
                 {
                     badInputs.Add(originalTableColumns.ElementAt(i).Value.Text);
@@ -329,9 +334,6 @@ namespace WWProject
                     changedColumnNames.Add(originalColumnNames[i], originalTableColumns.ElementAt(i).Value.Text);
                 }
             }
-            // if an Original column has been deleted
-            if(originalColumnsToDelete.Count > 0)
-                originalColumnDeleted = true;
 
             // if a new column has been added & not blank
             // check that all column names consist of proper characters
@@ -346,7 +348,6 @@ namespace WWProject
                         newGoodInputs.Add(column.Text);
                     }
                 }
-
             }
 
             // if old columns contain bad inputs
@@ -364,16 +365,23 @@ namespace WWProject
             }
 
             // if original column was deleted, will need to remake entire table
-            if (originalColumnDeleted)
+            if (originalColumnsToDelete.Count > 0)
             {
-
+                List<string> chosenColumns = new List<string>();
+                for(int i = 0; i < originalColumnNames.Count; i++)
+                {
+                    if(!originalColumnsToDelete.Contains(i))
+                        chosenColumns.Add(originalColumnNames[i]);
+                }
+                // SQL function
+                SqliteDataAccess.DeleteTable(chosenColumns, originalTableName);
             }
             // Acceptable changes
             if (originalColumnsEdited)
             {
                 SqliteDataAccess.EditTableColumns(changedColumnNames,originalTableName);
             }
-            if (!newColumnsEdited)
+            if (!newColumnsEdited && newTableColumns.Count > 0)
             {
                 SqliteDataAccess.AddNewColumns(newGoodInputs,originalTableName);
             }
@@ -398,12 +406,13 @@ namespace WWProject
         // CONTROL EVENTS below ------------------------------------------------------------------------------
         // ---------------------------------------------------------------------------------------------------
 
-        //
-        private void ComboBoxCategryNames_TextChanged(object sender, EventArgs e)
+        // On dropdown change, display Table's columns 
+        private void ComboBoxCategoryNames_SelectedIndexChanged(object sender, EventArgs e)
         {
             newTableColumns.Clear();
             originalColumnNames.Clear();
             originalTableColumns.Clear();
+            originalColumnsToDelete.Clear();
 
             ComboBox table = sender as ComboBox;
             PanelContent.Controls.Clear();
@@ -414,12 +423,12 @@ namespace WWProject
             //{
             //    AddColumnToList(column, true);
             //}
-            for(int i = 0; i < originalColumnNames.Count; i++)
+            for (int i = 0; i < originalColumnNames.Count; i++)
             {
                 AddColumnToList(originalColumnNames[i], true);
             }
 
-            if (!isNewTable && (newTableColumns.Count + originalColumnNames.Count) < textBoxMaxNumber)
+            if (!isNewTable && (newTableColumns.Count + originalColumnNames.Count) < TEXTBOX_MAX_NUMBER)
             {
                 ButtonColumnAdd.Enabled = true;
             }
@@ -427,10 +436,10 @@ namespace WWProject
         }
         // ###################################################################################################
 
-
-        //
+        // On Button click, lets selected table name in dropdown be changed
         private void ButtonEditTableName_Click(object sender, EventArgs e)
         {
+            // If 
             if (dropdownTables.Enabled)
             {
                 if (dropdownTables.Text == "")
@@ -453,41 +462,65 @@ namespace WWProject
                 tableNameToEdit.Enabled = false;
                 //originalTableName = "";
             }
-
         }
         // ###################################################################################################
 
 
-        //
+        // Disables/enables original table columns when editing a table
         private void TextBoxStatus_CheckedChanged(object sender, EventArgs e)
         {
             CheckBox checkBox = sender as CheckBox;
-            if (!checkBox.Checked)
-            {
-                // Enable linked TextBox
+            if (!checkBox.Checked) // Enable linked TextBox
                 originalTableColumns[checkBox].Enabled = true;
-            }
-            else
-            {
-                // Disable linked TextBox
+            else // Disable linked TextBox
                 originalTableColumns[checkBox].Enabled = false;
-            }
         }
         // ###################################################################################################
 
-        //
+
+        // Deletes related table column
+        private void ColumnDeleteButton_Click(object sender, EventArgs e)
+        {
+            // Do not remove dictionary elements, just add their index to List<int> originalColumnsToDelete
+            // make sure skip indexes that have a copy in this List<int>
+            // subtract the List<int> Count() from the current column count
+
+            Button deleteButton = sender as Button;
+            int index = removeOriginalColumnButtonList.IndexOf(deleteButton);
+            //originalColumnNames.RemoveAt(index);
+            // 1. store column information in order to remove from Table.
+            originalColumnsToDelete.Add(index);
+
+            //CheckBox checkBox = originalTableColumns.ElementAt(index).Key;
+            originalTableColumns.ElementAt(index).Key.Enabled = false;
+            originalTableColumns.ElementAt(index).Key.Visible = false;
+            originalTableColumns.ElementAt(index).Value.Enabled = false;
+            originalTableColumns.ElementAt(index).Value.Visible = false;
+            //originalTableColumns.ElementAt(index).Value.Dispose();
+            //originalTableColumns.Remove(checkBox);
+            //removeOriginalColumnButtonList.Remove(deleteButton);
+            removeOriginalColumnButtonList[index].Enabled = false;
+            removeOriginalColumnButtonList[index].Visible = false;
+            //checkBox.Dispose();
+            //deleteButton.Dispose();
+        }
+        // ###################################################################################################
+
+
+        // On Button click, if category is selected call function to add textbox for new column.
         private void ButtonColumnAdd_Click(object sender, EventArgs e)
         {
             if(!isNewTable && dropdownTables.Text == "")
             {
                 return;
             }
-            
+            // add new column
             AddColumnToList();
-            if (isNewTable && newTableColumns.Count == textBoxMaxNumber)
+            // if number of columns meets TEXTBOX_MAX_NUMBER, disable add column button
+            if (isNewTable && newTableColumns.Count == TEXTBOX_MAX_NUMBER)
             {
                 ButtonColumnAdd.Enabled = false;
-            } else if(!isNewTable && (newTableColumns.Count + originalColumnNames.Count) == textBoxMaxNumber)
+            } else if(!isNewTable && (newTableColumns.Count + originalColumnNames.Count) == TEXTBOX_MAX_NUMBER)
             {
                 ButtonColumnAdd.Enabled = false;
             }
@@ -495,7 +528,7 @@ namespace WWProject
         // ###################################################################################################
 
 
-        //
+        // On Button click, call function to remove newest added column
         private void ButtonColumnRemove_Click(object sender, EventArgs e)
         {
             RemoveNewColumnFromList();

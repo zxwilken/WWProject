@@ -257,7 +257,6 @@ namespace WWProject
         // show it's data in the Database panel on right
         private void ListViewEntries_DoubleClick(object sender, EventArgs e)
         {
-
             if (!searchAll)
             {
                 currentTableName = ComboBoxCategories.Text;
@@ -431,22 +430,30 @@ namespace WWProject
         private void TextboxSearch_KeyPress(object sender, KeyPressEventArgs e)
         {
             searchAll = true;
-            ComboBoxCategories.Text = "";
-            ListViewEntries.Clear();
-            dictCategoryEntries.Clear();
 
-            dictCategoryEntries = SqliteDataAccess.SearchBarGetEntries(TextboxSearch.Text);
-            foreach (string nm in dictCategoryEntries.Keys)
+            if (TextboxSearch.Text != "")
             {
-                ListViewEntries.Items.Add(nm);
-            }
-            if (TextboxSearch.Text == "")
+                ComboBoxCategories.Text = "";
+                ListViewEntries.Clear();
+                dictCategoryEntries.Clear();
+
+                dictCategoryEntries = SqliteDataAccess.SearchBarGetEntries(TextboxSearch.Text);
+                foreach (string nm in dictCategoryEntries.Keys)
+                {
+                    ListViewEntries.Items.Add(nm);
+                }
+                /*if (TextboxSearch.Text == "")
+                {
+                    searchAll = false;
+                    ListViewEntries.Clear();
+                    dictCategoryEntries.Clear();
+                }*/
+            } else if (TextboxSearch.Text == "")
             {
                 searchAll = false;
                 ListViewEntries.Clear();
                 dictCategoryEntries.Clear();
             }
-
 
         }
         // ###################################################################################################

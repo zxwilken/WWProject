@@ -509,6 +509,7 @@ namespace WWProject
             //dataReader.Close();
             cnn.Close();
         }
+        // ###################################################################################################
 
         public static void AddNewColumns(List<string> newColumns,string tableName)
         {
@@ -533,6 +534,54 @@ namespace WWProject
             dataReader.Close();
             cnn.Close();
         }
+        // ###################################################################################################
+
+        //
+        public static void DeleteTable(List<string> chosenColumns,string tableName)
+        {
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            SQLiteDataReader dataReader;
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            string last = chosenColumns.Last();
+            cmd.CommandText = "PRAGMA foreign_keys=off; " +
+                "CREATE TABLE IF NOT EXISTS new_table(" +
+                tableName + "ID INTEGER NOT NULL UNIQUE, " +
+                "EntryID INTEGER NOT NULL," +
+                "Name  TEXT NOT NULL, ";
+            foreach(string col in chosenColumns)
+            {
+                cmd.CommandText += col + "   TEXT, ";
+            }
+            cmd.CommandText += "PRIMARY KEY(" + tableName + "ID AUTOINCREMENT));" +
+                "INSERT INTO new_table(" + tableName + "ID, EntryID,Name,";
+            foreach(string col in chosenColumns)
+            {
+                if (col == last)
+                    cmd.CommandText += col + ") ";
+                else 
+                    cmd.CommandText += col + ",";
+            }
+            cmd.CommandText += "SELECT " + tableName + "ID,EntryID,Name,";
+            foreach(string col in chosenColumns)
+            {
+                if (col == last)
+                    cmd.CommandText += col + " FROM " + tableName + ";";
+                else
+                    cmd.CommandText += col + ",";
+            }
+            cmd.CommandText += "DROP TABLE " + tableName + "; ";
+            cmd.CommandText += "ALTER TABLE new_table RENAME TO " + tableName + "; ";
+            cmd.CommandText += "PRAGMA foreign_keys=on;";
+
+            dataReader = cmd.ExecuteReader();
+
+            cmd.Dispose();
+            dataReader.Close();
+            cnn.Close();
+        }
+        // ###################################################################################################
 
         // Checks if given string matches existing table name
         public static bool CheckIfTableExists(string name)
