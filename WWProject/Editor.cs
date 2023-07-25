@@ -9,19 +9,20 @@ namespace WWProject
 {
     public partial class Editor : Form
     {
-
         public string databaseName;
 
         // Dictionary with Column name as the key for the RichTextBox holding data
         private Dictionary<string, RichTextBox> dictDBEntryData = new Dictionary<string, RichTextBox>();
+        // Dictionary holding Entry name(key) and its [Table]ID (value)
         private Dictionary<string, int> dictCategoryEntries = new Dictionary<string, int>();
 
         // current values
         private string currentTxtFileAddress = "";
         private string currentTableName = "";
         private string currentEntryName = "";
-
+        // true if searching through all DB entries
         private bool searchAll = false;
+        private string startUpPath = Application.StartupPath + @"\";
 
         public Editor()
         {
@@ -39,12 +40,14 @@ namespace WWProject
         // 
         public void EditorStartUp()
         {
+            // Set database's name. Will need to change this from being hard coded
             databaseName = "WorldDB";
-
+            // Fill ComboBoxCategories with DB's category tables
             ComboBoxCategories.Items.AddRange(SqliteDataAccess.GetAllTables(false).ToArray());
             RichTextBoxMain.Enabled = false;
             ButtonAddTextFile.Enabled = false;
 
+            // setup search bar
             TextboxSearch.Text = "Search Database here...";
             TextboxSearch.GotFocus += Textbox_RemovePlaceholderText;
             TextboxSearch.LostFocus += Textbox_AddPlaceholderText;
@@ -53,11 +56,13 @@ namespace WWProject
         }
         // ###################################################################################################
 
+
         // Checks if the root directory for text files exists
         // if any directories are missing, a new one is created
         private void CheckFileSystem()
         {
-            string path = Application.StartupPath + databaseName + @"\";
+            //string path = Application.StartupPath + @"\" + databaseName + @"\";
+            string path = startUpPath + databaseName + @"\";
 
             if (!Directory.Exists(path))
             {
@@ -67,6 +72,7 @@ namespace WWProject
             CreateFileSystem(path);
         }
         // ###################################################################################################
+
 
         // Checks if category table directories exist,
         // if not, create a new one
@@ -82,6 +88,7 @@ namespace WWProject
         }
         // ###################################################################################################
 
+
         // Called by NewEntryForm when creating a new table entry
         // Calls a SqliteDataAccess method to start the process of creating new entry
         // Will display new entry in Editor
@@ -90,7 +97,7 @@ namespace WWProject
             int tableID = 0;
             if (addTextBox)
             {
-                string path = Application.StartupPath + databaseName + @"\";
+                string path = startUpPath + databaseName + @"\";
                 // txtFileAddress will only contain
                 string txtFileAddress = categoryName + @"\" + newEntryName + ".txt";
 
@@ -124,9 +131,9 @@ namespace WWProject
             // Display new Entry in Editor
             // clear Rich Text Box
             RichTextBoxMain.Clear();
-
+            // Get names of table columns
             List<string> columnNames = SqliteDataAccess.GetColumnAmount(categoryName);
-
+            // set current entry and table names to their globals
             LabelEntryName.Text = newEntryName;
             currentEntryName = newEntryName;
             currentTableName = categoryName;
@@ -147,24 +154,23 @@ namespace WWProject
             {
                 UpdateEntryList(ComboBoxCategories.Text);
             }
-            // ------------------------ Will eventually need to ask user if they want to save any updated data before creation of new entry -----------------
         }
         // ###################################################################################################
 
-        // clear ListViewEntries and fill it with entries from newely selected category
+
+        // clear ListViewEntries and fill it with entries from newly selected category
         private void UpdateEntryList(string categoryName)
         {
             ListViewEntries.Clear();
             dictCategoryEntries.Clear();
-
             dictCategoryEntries = SqliteDataAccess.GetTableEntryIdAndName(categoryName);
-
             foreach (string nm in dictCategoryEntries.Keys)
             {
                 ListViewEntries.Items.Add(nm);
             }
         }
         // ###################################################################################################
+
 
         // Method to display all data from relevant DB entry
         private void DynamTableEntries(List<string> columnNames, SQLiteCommand cmd)
@@ -222,18 +228,74 @@ namespace WWProject
         }
         // ###################################################################################################
 
+
+        // Add new table to DB. Update category dropdown
         public void AddNewTable(string tableName, List<string> newColumns)
         {
             SqliteDataAccess.AddNewTable(tableName, newColumns);
             UpdateDropdownAndDirectories();
         }
-        
+        // ###################################################################################################
+
+
+        // Updates category dropdown and checks filesystem
         public void UpdateDropdownAndDirectories()
         {
             ComboBoxCategories.Items.Clear();
             ComboBoxCategories.Items.AddRange(SqliteDataAccess.GetAllTables(false).ToArray());
             CheckFileSystem();
         }
+        // ###################################################################################################
+
+
+        // Delete currently selected text file
+        private void RemoveTextFile()
+        {
+            // remove text file address stored in DB
+            SqliteDataAccess.RemoveTextFileAddress(currentTableName, currentEntryName);
+            // delete text file
+            if (File.Exists(currentTxtFileAddress))
+            {
+                File.Delete(currentTxtFileAddress);
+            }
+            // Refresh RichTextBox
+            RichTextBoxMain.Clear();
+            RichTextBoxMain.Enabled = false;
+            ButtonAddTextFile.Enabled = true;
+        }
+        // ###################################################################################################
+
+
+        // Clear Editor panels related to entry data display. If parameter is true, clear RichTextboxMain too.
+        private void ClearDataPanels(bool clearRichTextboxMain)
+        {
+            PanelDatabase.Controls.Clear();
+            LabelEntryName.Text = "        ";
+            dictDBEntryData.Clear();
+            currentEntryName = "";
+            currentTxtFileAddress = "";
+            if (clearRichTextboxMain)
+            {
+                RichTextBoxMain.Clear();
+                RichTextBoxMain.Enabled = false;
+                ButtonAddTextFile.Enabled = false;
+            }
+        }
+        // ###################################################################################################
+
+
+        // Update currently selected DB entry
+        private void UpdateSelectedEntry()
+        {
+            // Need to transfer dictDBentryData's elements to a dictionary compatible w/ SqliteDataAccess function
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            foreach (KeyValuePair<string, RichTextBox> kvp in dictDBEntryData)
+            {
+                dict.Add(kvp.Key, kvp.Value.Text);
+            }
+            SqliteDataAccess.UpdateSelectedDBEntry(currentTableName, currentEntryName, dict);
+        }
+        // ###################################################################################################
 
 
 
@@ -283,7 +345,7 @@ namespace WWProject
             {
                 RichTextBoxMain.Enabled = true;
                 ButtonAddTextFile.Enabled = false;
-                currentTxtFileAddress = Application.StartupPath + databaseName + @"\" + address;
+                currentTxtFileAddress = startUpPath + databaseName + @"\" + address;
                 RichTextBoxMain.Text = File.ReadAllText(currentTxtFileAddress);
             }
 
@@ -333,17 +395,11 @@ namespace WWProject
         }
         // ###################################################################################################
 
+
         // Update currently selected DB entry with the current textbox values
         private void ButtonSaveDBEntry_Click(object sender, EventArgs e)
         {
-            Dictionary<string,string> dict = new Dictionary<string,string>();
-
-            foreach(KeyValuePair<string,RichTextBox> kvp in dictDBEntryData)
-            {
-                dict.Add(kvp.Key, kvp.Value.Text);
-            }
-
-            SqliteDataAccess.UpdateSelectedDBEntry(currentTableName,currentEntryName,dict);
+            UpdateSelectedEntry();
         }
         // ###################################################################################################
 
@@ -352,12 +408,13 @@ namespace WWProject
         {
             File.WriteAllText(currentTxtFileAddress, RichTextBoxMain.Text);
         }
+        // ###################################################################################################
 
-        // 
+
+        // Creates new text file and adds its address to DB
         private void ButtonAddTextFile_Click(object sender, EventArgs e)
         {
-            //currentTxtFileAddress = Application.StartupPath + SqliteDataAccess.GetDatabaseName() + @"\" + currentTableName + @"\" + currentEntryName + ".txt";
-            currentTxtFileAddress = Application.StartupPath + databaseName + @"\" + currentTableName + @"\" + currentEntryName + ".txt";
+            currentTxtFileAddress = startUpPath + databaseName + @"\" + currentTableName + @"\" + currentEntryName + ".txt";
             string entryAddress = currentTableName + @"\" + currentEntryName + ".txt";
             // Create new text file
             FileStream fs = File.Create(currentTxtFileAddress);
@@ -376,14 +433,18 @@ namespace WWProject
         }
         // ###################################################################################################
 
-        //
+
+        //Opens New form to create a new category
         private void ButtonNewCategory_Click(object sender, EventArgs e)
         {
             this.Enabled = false;
             TableForm tableForm = new TableForm(this,true);
             tableForm.Show();
         }
+        // ###################################################################################################
 
+
+        //Opens new form to edit or delete a DB table
         private void ButtonEditTable_Click(object sender, EventArgs e)
         {
             this.Enabled = false;
@@ -392,7 +453,8 @@ namespace WWProject
         }
         // ###################################################################################################
 
-        // 
+
+        // If TextboxSearch is clicked and is in foces, remove its placeholder text
         private void Textbox_RemovePlaceholderText(object sender,EventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -404,7 +466,8 @@ namespace WWProject
         }
         // ###################################################################################################
 
-        // 
+
+        // If TextboxSearch text is removed, re-add placeholder text
         private void Textbox_AddPlaceholderText(object sender, EventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -416,6 +479,7 @@ namespace WWProject
         }
         // ###################################################################################################
 
+
         // If the selected drop down text changes, clear ListViewEntries
         // and fill it with entries from newely selected category
         private void ComboBoxCategories_SelectedIndexChanged(object sender, EventArgs e)
@@ -425,6 +489,7 @@ namespace WWProject
             TextboxSearch.Clear();
         }
         // ###################################################################################################
+
 
         //// If text is empty on keypress, clear combobox and listview
         private void TextboxSearch_KeyPress(object sender, KeyPressEventArgs e)
@@ -454,12 +519,42 @@ namespace WWProject
                 ListViewEntries.Clear();
                 dictCategoryEntries.Clear();
             }
-
         }
         // ###################################################################################################
 
 
+        // Button that will call method to delete currently selected text file
+        private void ButtonDeleteTextFile_Click(object sender, EventArgs e)
+        {
+            RemoveTextFile();
+        }
+        // ###################################################################################################
 
 
+        // Deletes currently selected DB entry + related text file
+        private void ButtonDeleteDBEntry_Click(object sender, EventArgs e)
+        {
+            string message = "Are you sure you want to delete the selected entry?\n\n" +
+                "Doing so will also delete any text file attached to this entry.";
+            string caption = "Delete Current Entry";
+
+            // Create MessageBox prompting user
+            DialogResult result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo);
+
+            // If Yes, call SQLiteDataAccess function to delete table
+            if (result == DialogResult.Yes)
+            {
+                // Call
+                SqliteDataAccess.DeleteTableEntry(currentTableName, currentEntryName);
+                RemoveTextFile();
+                // currently selected Category is the same as deleted entry's, refresh displayed entry list
+                if(ComboBoxCategories.Text == currentTableName)
+                {
+                    UpdateEntryList(currentTableName);
+                }
+                ClearDataPanels(false);
+            }
+        }
+        // ###################################################################################################
     }
 }

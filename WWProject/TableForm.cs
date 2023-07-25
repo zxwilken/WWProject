@@ -1,11 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WWProject
@@ -24,7 +21,7 @@ namespace WWProject
         string originalTableName;
         private ComboBox dropdownTables;
         private TextBox tableNameToEdit;
-
+        private Button buttonDeleteTable;
 
         private List<TextBox> newTableColumns = new List<TextBox>();
         private int contentY;
@@ -32,7 +29,7 @@ namespace WWProject
         private TextBox newTableName;
         private const int TEXTBOX_MAX_NUMBER = 8;
 
-        //
+        // Constructor
         public TableForm(Editor ed,bool creatingTable)
         {
             InitializeComponent();
@@ -72,6 +69,7 @@ namespace WWProject
         // Sets up the Form to edit database tables
         private void EditTableStartup()
         {
+            // Create dropdown box for DB categories
             dropdownTables = new ComboBox();
             dropdownTables.Items.AddRange(SqliteDataAccess.GetAllTables(false).ToArray());
             dropdownTables.Size = new Size(160, 28);
@@ -80,6 +78,7 @@ namespace WWProject
             dropdownTables.Location = new Point(PanelName.Width / 2 - dropdownTables.Width / 2, LabelTableName.Bottom + 10);
             dropdownTables.SelectedIndexChanged += ComboBoxCategoryNames_SelectedIndexChanged;
 
+            // Button to edit the currently selected category name
             Button buttonEditName = new Button();
             buttonEditName.Font = new Font("Microsoft Sans Serif", 12);
             buttonEditName.Text = "Edit Name";
@@ -87,18 +86,31 @@ namespace WWProject
             buttonEditName.Height = 27;
             buttonEditName.Click += ButtonEditTableName_Click;
 
+            // When user presses button to edit category name, display this
             tableNameToEdit = new TextBox();
             tableNameToEdit.Font = new Font("Microsoft Sans Serif", 12);
             tableNameToEdit.Location = dropdownTables.Location;
             tableNameToEdit.Size = dropdownTables.Size;
             tableNameToEdit.Visible = false;
             tableNameToEdit.Enabled = false;
-            
+
+            // Button to delete currently selected category
+            buttonDeleteTable = new Button();
+            buttonDeleteTable.Font = new Font("Microsoft Sans Serif", 12);
+            buttonDeleteTable.Text = "Delete Table";
+            buttonDeleteTable.Location = new Point(dropdownTables.Right + 20, LabelTableName.Bottom + 10);
+            buttonDeleteTable.Height = 27;
+            buttonDeleteTable.Enabled = false;
+            buttonDeleteTable.Click += ButtonDeleteTable_Click;
+
             // Add Controls to panel
             PanelName.Controls.Add(dropdownTables);
             PanelName.Controls.Add(buttonEditName);
             PanelName.Controls.Add(tableNameToEdit);
+            PanelName.Controls.Add(buttonDeleteTable);
 
+
+            
         }
         // ###################################################################################################
 
@@ -121,7 +133,9 @@ namespace WWProject
         // ###################################################################################################
 
 
-        //
+        // Creates new textbox to form panel.
+        // If creating new table, just the textbox is created
+        // If Editing a table, creates a checkbox to toggle textbox on or off and button to delete associated column
         private TextBox AddColumnToList(string columnlName = "",bool disableBox = false )
         {
             Font newFont = new Font("Microsoft Sans Serif", 12);
@@ -374,7 +388,7 @@ namespace WWProject
                         chosenColumns.Add(originalColumnNames[i]);
                 }
                 // SQL function
-                SqliteDataAccess.DeleteTable(chosenColumns, originalTableName);
+                SqliteDataAccess.DeleteTableColumn(chosenColumns, originalTableName);
             }
             // Acceptable changes
             if (originalColumnsEdited)
@@ -389,7 +403,7 @@ namespace WWProject
             {
                 SqliteDataAccess.EditTableName(originalTableName, tableNameToEdit.Text);
                 // change Table's directory name
-                string path = Application.StartupPath + editorForm.databaseName + @"\";
+                string path = Application.StartupPath + @"\" + editorForm.databaseName + @"\";
                 System.IO.Directory.Move(path + originalTableName, path + tableNameToEdit.Text);
             }
 
@@ -400,6 +414,26 @@ namespace WWProject
         }
         // ###################################################################################################
 
+        // Handles everything needed to Drop a table
+        private void DeleteSelectedTable()
+        {
+            string path = Application.StartupPath+ @"\" + editorForm.databaseName + @"\" + dropdownTables.Text ;
+
+            if (Directory.Exists(path))
+                Directory.Delete(path, true);
+            else {
+                MessageBox.Show("Directory Doesn't exist. Stopping category deletion.\n" + path);
+                return;
+            }
+
+
+            int tableID = SqliteDataAccess.GetTableID(dropdownTables.Text);
+            SqliteDataAccess.RemoveTable(tableID,dropdownTables.Text);
+
+            PanelContent.Controls.Clear();
+            dropdownTables.Items.Clear();
+            dropdownTables.Items.AddRange(SqliteDataAccess.GetAllTables(false).ToArray());
+        }
 
 
         // ---------------------------------------------------------------------------------------------------
@@ -413,6 +447,7 @@ namespace WWProject
             originalColumnNames.Clear();
             originalTableColumns.Clear();
             originalColumnsToDelete.Clear();
+            buttonDeleteTable.Enabled = true;
 
             ComboBox table = sender as ComboBox;
             PanelContent.Controls.Clear();
@@ -535,6 +570,24 @@ namespace WWProject
         }
         // ###################################################################################################
 
+        // On click, prompt user if they are sure they want to delete table
+        private void ButtonDeleteTable_Click(object sender, EventArgs e)
+        {
+            string message = "Are you sure you want to delete the category: " + originalTableName + " ?\n\n" +
+                "Doing so will delete all entries in the category and all related text files.";
+            string caption = "Delete Selected Category";
+
+            // Create MessageBox prompting user
+            DialogResult result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo);
+            
+            // If Yes, call SQLiteDataAccess function to delete table
+            if(result == DialogResult.Yes)
+            {
+                // Call
+                DeleteSelectedTable();
+            }
+        }
+        // ###################################################################################################
 
         // Event for the submit button
         private void ButtonSubmit_Click(object sender, EventArgs e)

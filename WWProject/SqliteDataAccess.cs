@@ -186,7 +186,7 @@ namespace WWProject
 
 
         // Gets a category table's ID from LUTable
-        private static int GetTableID(string tableName)
+        public static int GetTableID(string tableName)
         {
             int id = 0;
             // Create and open connection to local SQLite DB
@@ -210,7 +210,10 @@ namespace WWProject
         // ###################################################################################################
 
 
-        // 
+        // Handles adding a new entry into the DB. 
+        // 1. Creates new entry in Entries table. Fills in Name, TableID, and TextfileAddress if there is one. Returns the EntryID
+        // 2. Creates new entry in the associated Category table. Returns the [Table]ID to add to the linked Entries entry
+        // 3. Updates the Entries entry with the newly created [Table]ID
         public static int AddTableEntry(string categoryName, string newEntryName,string txtFileAddress=null )
         {
             int entryID = AddToEntriesStart(newEntryName,GetTableID(categoryName),txtFileAddress);
@@ -390,7 +393,7 @@ namespace WWProject
         }
         // ###################################################################################################
 
-        //
+        // If a text file is added to an entry in post, updates the Entries entry with the file address
         public static void UpdateEntryFileAddress(int entryID,string textAddress)
         {
             SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
@@ -408,7 +411,7 @@ namespace WWProject
         // ###################################################################################################
 
 
-        //
+        // Creates a new Table with given table name and list of column names
         public static void AddNewTable(string tableName,List<string> columnNames)
         {
             SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
@@ -435,7 +438,7 @@ namespace WWProject
         }
         // ###################################################################################################
 
-        //
+        // When a new table is created, add new entry into LUTables w/ its name
         private static void AddToLUTables(string tableName)
         {
             SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
@@ -477,7 +480,7 @@ namespace WWProject
         // ###################################################################################################
 
 
-        //
+        // Alters the names of a table's columns
         public static void EditTableColumns(Dictionary<string,string> columns,string tableName)
         {
             SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
@@ -486,16 +489,6 @@ namespace WWProject
             SQLiteCommand cmd = cnn.CreateCommand();
 
             string last = columns.Keys.Last();
-
-            /*cmd.CommandText = "ALTER TABLE " + tableName + " RENAME COLUMN ";
-            foreach(KeyValuePair<string,string> column in columns)
-            {
-                if (column.Key == last)
-                    cmd.CommandText += column.Key + " TO " + column.Value + ";";
-                else  
-                    cmd.CommandText += column.Key + " TO " + column.Value + ", "; 
-            }*/
-
             foreach(KeyValuePair<string, string> column in columns)
             {
                 cmd.CommandText = "ALTER TABLE " + tableName + " RENAME COLUMN " + column.Key + " TO " + column.Value + ";";
@@ -503,14 +496,12 @@ namespace WWProject
                 cmd.Dispose();
             }
 
-            //dataReader = cmd.ExecuteReader();
-
             cmd.Dispose();
-            //dataReader.Close();
             cnn.Close();
         }
         // ###################################################################################################
 
+        // Adds new column(s) to a table
         public static void AddNewColumns(List<string> newColumns,string tableName)
         {
             SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
@@ -536,8 +527,10 @@ namespace WWProject
         }
         // ###################################################################################################
 
-        //
-        public static void DeleteTable(List<string> chosenColumns,string tableName)
+        // Deletes a table column
+        // SQLite cannot delete just delete a table column. A new table needs to be made without the specific column(s)
+        // With the entries being copied over
+        public static void DeleteTableColumn(List<string> chosenColumns,string tableName)
         {
             SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
             SQLiteDataReader dataReader;
@@ -582,6 +575,94 @@ namespace WWProject
             cnn.Close();
         }
         // ###################################################################################################
+        
+        // Calls multiple functions containing SQL commands to delete a Table and related entries
+        public static void RemoveTable(int tableID,string tableName)
+        {
+            DeleteEntriesByTableID(tableID);
+            DeleteLUTablesEntry(tableID);
+            DropTable(tableName);
+        }
+        // ###################################################################################################
+
+        // Deletes entries in Entries table by TableID
+        private static void DeleteEntriesByTableID(int tableID)
+        {
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            cmd.CommandText = "DELETE FROM Entries WHERE TableID = " + tableID + ";";
+            cmd.ExecuteReader();
+
+            cmd.Dispose();
+            cnn.Close();
+        }
+        // ###################################################################################################
+
+        // Deletes a LUTables entry
+        private static void DeleteLUTablesEntry(int tableID)
+        {
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            cmd.CommandText = "DELETE FROM LUTables WHERE TableID = " + tableID + ";";
+            cmd.ExecuteReader();
+
+            cmd.Dispose();
+            cnn.Close();
+        }
+        // ###################################################################################################
+
+        // Drop a table
+        private static void DropTable(string tableName)
+        {
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            cmd.CommandText = "DROP TABLE " + tableName + ";";
+            cmd.ExecuteReader();
+
+            cmd.Dispose();
+            cnn.Close();
+        }
+        // ###################################################################################################
+
+        // Delete an entries text file address from DB
+        public static void RemoveTextFileAddress(string tableName,string entryName)
+        {
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            cmd.CommandText = "UPDATE Entries SET FileAddress = null WHERE EntryID = (SELECT EntryID FROM " + tableName + " WHERE Name = '" + entryName + "');";
+            cmd.ExecuteReader();
+
+            cmd.Dispose();
+            cnn.Close();
+        }
+
+        // Delete entry from selected table and Entries
+        public static void DeleteTableEntry(string tableName, string entryName)
+        {
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            cmd.CommandText = "DELETE FROM Entries WHERE EntryID = (" +
+                "SELECT EntryID FROM " + tableName + " WHERE Name = '" + entryName + "');";
+            cmd.ExecuteReader();
+            cmd.Dispose ();
+
+            cmd.CommandText = "DELETE FROM " + tableName + " WHERE Name = '" + entryName + "';";
+            cmd.ExecuteReader ();
+            cmd.Dispose();
+            cnn.Close();
+
+        }
+        // ###################################################################################################
 
         // Checks if given string matches existing table name
         public static bool CheckIfTableExists(string name)
@@ -598,7 +679,7 @@ namespace WWProject
         }
         // ###################################################################################################
 
-        //
+        // For Editor searchbar. Searches for entry names containing string given by user
         public static Dictionary<string, int> SearchBarGetEntries(string userEntry)
         {
             Dictionary<string, int> entries = new Dictionary<string, int>();
