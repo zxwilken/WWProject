@@ -20,11 +20,8 @@ C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bi
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Debug\WWProject.exe.config
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Debug\WWProject.exe
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Debug\WWProject.pdb
-C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Debug\Dapper.dll
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Debug\System.Data.SQLite.dll
-C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Debug\Dapper.xml
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Debug\System.Data.SQLite.xml
-C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.csproj.AssemblyReference.cache
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.csproj.SuggestedBindingRedirects.cache
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.Editor.resources
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.NewEntryForm.resources
@@ -35,3 +32,5 @@ C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\ob
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.exe
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.pdb
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.TableForm.resources
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.StartUp.resources
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Debug\WWProject.csproj.AssemblyReference.cache

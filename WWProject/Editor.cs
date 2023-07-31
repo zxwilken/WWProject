@@ -10,7 +10,7 @@ namespace WWProject
     public partial class Editor : Form
     {
         public string databaseName;
-
+        StartUp startUP;
         // Dictionary with Column name as the key for the RichTextBox holding data
         private Dictionary<string, RichTextBox> dictDBEntryData = new Dictionary<string, RichTextBox>();
         // Dictionary holding Entry name(key) and its [Table]ID (value)
@@ -24,11 +24,14 @@ namespace WWProject
         private bool searchAll = false;
         private string startUpPath = Application.StartupPath + @"\";
 
-        public Editor()
+        public Editor(string name,StartUp stUp)
         {
             InitializeComponent();
-
+            startUP = stUp;
+            databaseName = name;
+            this.Text = "Editor: " + name;
             EditorStartUp();
+            
         }
         // ###################################################################################################
 
@@ -40,8 +43,6 @@ namespace WWProject
         // 
         public void EditorStartUp()
         {
-            // Set database's name. Will need to change this from being hard coded
-            databaseName = "WorldDB";
             // Fill ComboBoxCategories with DB's category tables
             ComboBoxCategories.Items.AddRange(SqliteDataAccess.GetAllTables(false).ToArray());
             RichTextBoxMain.Enabled = false;
@@ -63,7 +64,6 @@ namespace WWProject
         {
             //string path = Application.StartupPath + @"\" + databaseName + @"\";
             string path = startUpPath + databaseName + @"\";
-
             if (!Directory.Exists(path))
             {
                 MessageBox.Show("Project's Root Directory\nDoes Not Exist\nCreating New Root Directory");
@@ -554,6 +554,11 @@ namespace WWProject
                 }
                 ClearDataPanels(false);
             }
+        }
+
+        private void Editor_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            startUP.Close();
         }
         // ###################################################################################################
     }

@@ -4,8 +4,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.SQLite;
 
-//using Dapper;
-
 namespace WWProject
 {
     internal class SqliteDataAccess

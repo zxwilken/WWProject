@@ -7,7 +7,6 @@ using System.Windows.Forms;
 
 namespace WWProject
 {
-
     public partial class TableForm : Form
     {
         Editor editorForm;
