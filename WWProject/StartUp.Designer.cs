@@ -175,6 +175,7 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "StartUp";
             this.Text = "StartUp";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.StartUp_FormClosed);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

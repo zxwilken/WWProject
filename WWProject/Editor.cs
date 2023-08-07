@@ -43,51 +43,19 @@ namespace WWProject
         // 
         public void EditorStartUp()
         {
-            // Fill ComboBoxCategories with DB's category tables
-            ComboBoxCategories.Items.AddRange(SqliteDataAccess.GetAllTables(false).ToArray());
-            RichTextBoxMain.Enabled = false;
-            ButtonAddTextFile.Enabled = false;
-
             // setup search bar
             TextboxSearch.Text = "Search Database here...";
             TextboxSearch.GotFocus += Textbox_RemovePlaceholderText;
             TextboxSearch.LostFocus += Textbox_AddPlaceholderText;
 
-            CheckFileSystem();
+            FileManagementHelper.CheckFileSystem(databaseName);
+
+            // Fill ComboBoxCategories with DB's category tables
+            ComboBoxCategories.Items.AddRange(SqliteDataAccess.GetAllTables(false).ToArray());
+            RichTextBoxMain.Enabled = false;
+            ButtonAddTextFile.Enabled = false;
         }
         // ###################################################################################################
-
-
-        // Checks if the root directory for text files exists
-        // if any directories are missing, a new one is created
-        private void CheckFileSystem()
-        {
-            //string path = Application.StartupPath + @"\" + databaseName + @"\";
-            string path = startUpPath + databaseName + @"\";
-            if (!Directory.Exists(path))
-            {
-                MessageBox.Show("Project's Root Directory\nDoes Not Exist\nCreating New Root Directory");
-                Directory.CreateDirectory(path);
-            } 
-            CreateFileSystem(path);
-        }
-        // ###################################################################################################
-
-
-        // Checks if category table directories exist,
-        // if not, create a new one
-        private void CreateFileSystem(string path)
-        {
-            foreach (string dir in SqliteDataAccess.GetAllTables(false))
-            {
-                if (!Directory.Exists(path + dir))
-                {
-                    Directory.CreateDirectory(path + dir);
-                }
-            }
-        }
-        // ###################################################################################################
-
 
         // Called by NewEntryForm when creating a new table entry
         // Calls a SqliteDataAccess method to start the process of creating new entry
@@ -243,7 +211,7 @@ namespace WWProject
         {
             ComboBoxCategories.Items.Clear();
             ComboBoxCategories.Items.AddRange(SqliteDataAccess.GetAllTables(false).ToArray());
-            CheckFileSystem();
+            FileManagementHelper.CheckFileSystem(databaseName);
         }
         // ###################################################################################################
 
@@ -319,58 +287,72 @@ namespace WWProject
         // show it's data in the Database panel on right
         private void ListViewEntries_DoubleClick(object sender, EventArgs e)
         {
-            if (!searchAll)
+            try
             {
-                currentTableName = ComboBoxCategories.Text;
+                if (!searchAll)
+                {
+                    currentTableName = ComboBoxCategories.Text;
 
-            } else
+                }
+                else
+                {
+                    //currentTableName = SqliteDataAccess.
+                    currentTableName = SqliteDataAccess.GetTableNameFromEntryID(dictCategoryEntries[ListViewEntries.SelectedItems[0].SubItems[0].Text]);
+                }
+                List<string> columnNames = SqliteDataAccess.GetColumnAmount(currentTableName);
+                if (ListViewEntries.SelectedItems[0].SubItems[0].Text == "")
+                    return;
+
+                LabelEntryName.Text = ListViewEntries.SelectedItems[0].SubItems[0].Text;
+
+                currentEntryName = ListViewEntries.SelectedItems[0].SubItems[0].Text;
+
+                // Gets selected entries text file address if there is one
+                currentTxtFileAddress = "";
+                string address = null;
+                address = SqliteDataAccess.GetFileAddress(currentTableName, currentEntryName);
+                if (address == null)
+                {
+                    RichTextBoxMain.Clear();
+                    RichTextBoxMain.Enabled = false;
+                    ButtonAddTextFile.Enabled = true;
+                }
+                else
+                {
+                    RichTextBoxMain.Enabled = true;
+                    ButtonAddTextFile.Enabled = false;
+                    currentTxtFileAddress = startUpPath + databaseName + @"\" + address;
+                    RichTextBoxMain.Text = File.ReadAllText(currentTxtFileAddress);
+                }
+
+                SQLiteConnection cnn = new SQLiteConnection(SqliteDataAccess.LoadConnectionString());
+                cnn.Open();
+                SQLiteCommand cmd = cnn.CreateCommand();
+                // create SQL statement to get all values from selected table
+
+                // The 'value' of each 'key' contained in the Dictionary dictCategoryEntries is different
+                // depending on whether the Dictionary was filled based on ComboBoxCategories_SelectedIndexChanged or from TextboxSearch_KeyPress
+                // ComboBoxCategories_SelectedIndexChanged returns Entry Name and its [Table]ID
+                // while TextboxSearch_KeyPress returns its Entry Name and EntryID
+                // Using Different command text is simple way instead of trying to do another SQL query
+                if (!searchAll)
+                {
+                    cmd.CommandText = @"SELECT * FROM " + currentTableName + " WHERE " + currentTableName + "ID = " + dictCategoryEntries[currentEntryName];
+                }
+                else
+                {
+                    cmd.CommandText = @"SELECT * FROM " + currentTableName + " WHERE EntryID = " + dictCategoryEntries[currentEntryName];
+                }
+
+                // Send SQLite command
+                DynamTableEntries(columnNames, cmd);
+
+                cmd.Dispose();
+                cnn.Close();
+            } catch (Exception ex)
             {
-                //currentTableName = SqliteDataAccess.
-                currentTableName = SqliteDataAccess.GetTableNameFromEntryID(dictCategoryEntries[ListViewEntries.SelectedItems[0].SubItems[0].Text]);
+                return;
             }
-            List<string> columnNames = SqliteDataAccess.GetColumnAmount(currentTableName);
-            LabelEntryName.Text = ListViewEntries.SelectedItems[0].SubItems[0].Text;
-            currentEntryName = ListViewEntries.SelectedItems[0].SubItems[0].Text;
-
-            // Gets selected entries text file address if there is one
-            currentTxtFileAddress = "";
-            string address = null;
-            address = SqliteDataAccess.GetFileAddress(currentTableName, currentEntryName);
-            if (address == null)
-            {
-                RichTextBoxMain.Clear();
-                RichTextBoxMain.Enabled = false;
-                ButtonAddTextFile.Enabled = true;
-            } else
-            {
-                RichTextBoxMain.Enabled = true;
-                ButtonAddTextFile.Enabled = false;
-                currentTxtFileAddress = startUpPath + databaseName + @"\" + address;
-                RichTextBoxMain.Text = File.ReadAllText(currentTxtFileAddress);
-            }
-
-            SQLiteConnection cnn = new SQLiteConnection(SqliteDataAccess.LoadConnectionString());
-            cnn.Open();
-            SQLiteCommand cmd = cnn.CreateCommand();
-            // create SQL statement to get all values from selected table
-
-            // The 'value' of each 'key' contained in the Dictionary dictCategoryEntries is different
-            // depending on whether the Dictionary was filled based on ComboBoxCategories_SelectedIndexChanged or from TextboxSearch_KeyPress
-            // ComboBoxCategories_SelectedIndexChanged returns Entry Name and its [Table]ID
-            // while TextboxSearch_KeyPress returns its Entry Name and EntryID
-            // Using Different command text is simple way instead of trying to do another SQL query
-            if (!searchAll) { 
-            cmd.CommandText = @"SELECT * FROM " + currentTableName + " WHERE " + currentTableName + "ID = " + dictCategoryEntries[currentEntryName];
-            } else
-            {
-                cmd.CommandText = @"SELECT * FROM " + currentTableName + " WHERE EntryID = " + dictCategoryEntries[currentEntryName];
-            }
-
-            // Send SQLite command
-            DynamTableEntries(columnNames, cmd);
-
-            cmd.Dispose();
-            cnn.Close();
         }
         // ###################################################################################################
 
@@ -538,11 +520,8 @@ namespace WWProject
                 "Doing so will also delete any text file attached to this entry.";
             string caption = "Delete Current Entry";
 
-            // Create MessageBox prompting user
-            DialogResult result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo);
-
             // If Yes, call SQLiteDataAccess function to delete table
-            if (result == DialogResult.Yes)
+            if (UserInputHelper.YesNoMessage(message, caption))
             {
                 // Call
                 SqliteDataAccess.DeleteTableEntry(currentTableName, currentEntryName);

@@ -69,7 +69,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 21.37255F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 78.62745F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 455F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 456F));
             this.tableLayoutPanel1.Controls.Add(this.PanelTopLeft, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.PanelCategoryTables, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.PanelTextBox, 1, 1);
@@ -159,7 +159,7 @@
             this.PanelTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelTextBox.Location = new System.Drawing.Point(226, 85);
             this.PanelTextBox.Name = "PanelTextBox";
-            this.PanelTextBox.Size = new System.Drawing.Size(816, 493);
+            this.PanelTextBox.Size = new System.Drawing.Size(815, 493);
             this.PanelTextBox.TabIndex = 2;
             // 
             // RichTextBoxMain
@@ -168,7 +168,8 @@
             this.RichTextBoxMain.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.RichTextBoxMain.Location = new System.Drawing.Point(0, 0);
             this.RichTextBoxMain.Name = "RichTextBoxMain";
-            this.RichTextBoxMain.Size = new System.Drawing.Size(816, 493);
+            this.RichTextBoxMain.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.RichTextBoxMain.Size = new System.Drawing.Size(815, 493);
             this.RichTextBoxMain.TabIndex = 0;
             this.RichTextBoxMain.Text = "";
             // 
@@ -178,7 +179,7 @@
             this.PanelTopMid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelTopMid.Location = new System.Drawing.Point(226, 3);
             this.PanelTopMid.Name = "PanelTopMid";
-            this.PanelTopMid.Size = new System.Drawing.Size(816, 76);
+            this.PanelTopMid.Size = new System.Drawing.Size(815, 76);
             this.PanelTopMid.TabIndex = 3;
             // 
             // LabelEntryName
@@ -195,9 +196,9 @@
             // 
             this.PanelTopRight.Controls.Add(this.LabelDatabase);
             this.PanelTopRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelTopRight.Location = new System.Drawing.Point(1048, 3);
+            this.PanelTopRight.Location = new System.Drawing.Point(1047, 3);
             this.PanelTopRight.Name = "PanelTopRight";
-            this.PanelTopRight.Size = new System.Drawing.Size(450, 76);
+            this.PanelTopRight.Size = new System.Drawing.Size(451, 76);
             this.PanelTopRight.TabIndex = 4;
             // 
             // LabelDatabase
@@ -214,7 +215,7 @@
             // 
             this.PanelDatabase.AutoSize = true;
             this.PanelDatabase.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PanelDatabase.Location = new System.Drawing.Point(1048, 85);
+            this.PanelDatabase.Location = new System.Drawing.Point(1047, 85);
             this.PanelDatabase.Name = "PanelDatabase";
             this.PanelDatabase.Size = new System.Drawing.Size(0, 0);
             this.PanelDatabase.TabIndex = 20;
@@ -227,7 +228,7 @@
             this.PanelBottomMid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelBottomMid.Location = new System.Drawing.Point(226, 584);
             this.PanelBottomMid.Name = "PanelBottomMid";
-            this.PanelBottomMid.Size = new System.Drawing.Size(816, 30);
+            this.PanelBottomMid.Size = new System.Drawing.Size(815, 30);
             this.PanelBottomMid.TabIndex = 6;
             // 
             // ButtonAddTextFile
@@ -269,9 +270,9 @@
             this.PanelBottomRight.Controls.Add(this.ButtonNewDBEntry);
             this.PanelBottomRight.Controls.Add(this.ButtonSaveDBEntry);
             this.PanelBottomRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PanelBottomRight.Location = new System.Drawing.Point(1048, 584);
+            this.PanelBottomRight.Location = new System.Drawing.Point(1047, 584);
             this.PanelBottomRight.Name = "PanelBottomRight";
-            this.PanelBottomRight.Size = new System.Drawing.Size(450, 30);
+            this.PanelBottomRight.Size = new System.Drawing.Size(451, 30);
             this.PanelBottomRight.TabIndex = 7;
             // 
             // ButtonDeleteDBEntry

@@ -224,7 +224,7 @@ namespace WWProject
 
             for (int i = 0; i < newTableColumns.Count; i++)
             {
-                if (!SqliteDataAccess.CheckUserInput(newTableColumns[i].Text) || newTableColumns[i].Text == "")
+                if (!UserInputHelper.CheckUserInput(newTableColumns[i].Text) || newTableColumns[i].Text == "")
                 {
                     badInputs.Add(newTableColumns[i].Text);
                     newTableColumns.RemoveAt(i);
@@ -333,9 +333,8 @@ namespace WWProject
                 // checks if the current loops index matches one of the columns chosen to be deleted,
                 if (originalColumnsToDelete.Contains(i))
                     continue; 
-
-                
-                if (!SqliteDataAccess.CheckUserInput(originalTableColumns.ElementAt(i).Value.Text) || originalTableColumns.ElementAt(i).Value.Text == "")
+   
+                if (!UserInputHelper.CheckUserInput(originalTableColumns.ElementAt(i).Value.Text) || originalTableColumns.ElementAt(i).Value.Text == "")
                 {
                     badInputs.Add(originalTableColumns.ElementAt(i).Value.Text);
                     continue;
@@ -406,9 +405,6 @@ namespace WWProject
                 System.IO.Directory.Move(path + originalTableName, path + tableNameToEdit.Text);
             }
 
-
-            
-
             return true;
         }
         // ###################################################################################################
@@ -424,7 +420,6 @@ namespace WWProject
                 MessageBox.Show("Directory Doesn't exist. Stopping category deletion.\n" + path);
                 return;
             }
-
 
             int tableID = SqliteDataAccess.GetTableID(dropdownTables.Text);
             SqliteDataAccess.RemoveTable(tableID,dropdownTables.Text);
@@ -576,11 +571,9 @@ namespace WWProject
                 "Doing so will delete all entries in the category and all related text files.";
             string caption = "Delete Selected Category";
 
-            // Create MessageBox prompting user
-            DialogResult result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo);
-            
+            // Create MessageBox prompting user           
             // If Yes, call SQLiteDataAccess function to delete table
-            if(result == DialogResult.Yes)
+            if(UserInputHelper.YesNoMessage(message,caption))
             {
                 // Call
                 DeleteSelectedTable();

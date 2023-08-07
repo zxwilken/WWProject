@@ -35,6 +35,20 @@ namespace WWProject
                 MessageBox.Show("Entry Name Must Be Entered");
                 return;
             }
+            bool badTypedInComboBox = true;
+            foreach(string item in ComboBoxCategories.Items)
+            {
+                if(item == ComboBoxCategories.Text)
+                {
+                    badTypedInComboBox = false;
+                    break;
+                }
+            }
+            if (badTypedInComboBox)
+            {
+                MessageBox.Show("Not a valid category.");
+                return;
+            }
             // Checks that Entered name does not exist as a category name
             foreach(string table in SqliteDataAccess.GetAllTables(true))
             {

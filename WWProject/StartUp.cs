@@ -1,12 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WWProject
@@ -22,7 +17,8 @@ namespace WWProject
             SetUpProgram();
             ListViewDatabases.Font = new Font("Microsoft Sans Serif", 14);
             ListViewDatabases.SelectedIndexChanged += ListViewDatabases_SelectedChange;
-            ButtonDeleteDatabase.Enabled = false;
+            //AppSetting.ClearConnectionString();
+            //MessageBox.Show(SqliteDataAccess.LoadConnectionString());
         }
 
         private void SetUpProgram()
@@ -30,23 +26,10 @@ namespace WWProject
             SaveDatabases();
         }
 
-        private string[] GetDatabases()
-        {
-            string startUpPath = Application.StartupPath + @"\Databases\";
-            if (Directory.Exists(startUpPath))
-            {
-                return Directory.GetFiles(startUpPath, "*.db");
-            } else
-            {
-                Directory.CreateDirectory(startUpPath);
-                return null;
-            }
-        }// !!
-
         // Reads and saves the names and file paths of each .db in a select folder
         private void SaveDatabases()
         {
-            string[] filePaths = GetDatabases();
+            string[] filePaths = FileManagementHelper.GetDatabases();
             if (filePaths != null)
             {
                 dictDatabases.Clear();
@@ -69,22 +52,19 @@ namespace WWProject
             }
         }// !!
 
-
+        // Creates new Editor form. Created on selection of database
         private void StartEditor(string chosenDB)
         {
-            // Create new Editor object
-            // Send this form to Editor??
             Editor ed = new Editor(chosenDB,this);
             ed.Show();
-            //this.Close();
             this.Enabled = false;
             this.Visible = false;
         }
 
         public bool CheckForDuplicateName(string name)
         {
-            string[] filePaths = GetDatabases();
-            if(filePaths != null)
+            string[] filePaths = FileManagementHelper.GetDatabases();
+            if (filePaths != null)
             {
                 foreach (string filePath in filePaths)
                 {
@@ -100,11 +80,7 @@ namespace WWProject
         private void MakeNewDatabase(string name)
         {
             // Copy default DB to 'Databases' directory
-            string newDatabaseName = name + ".db";
-            string startingPath = Application.StartupPath + @"\..\..\DefaultDatabaseCopy\Default.db";
-            string destinationPath = Application.StartupPath + @"\Databases\" + newDatabaseName;
-            File.Copy(startingPath, destinationPath, false);
-
+            FileManagementHelper.CreateNewDatabase(name);
             // Refresh ListViewDatabases and dictDatabases
             SaveDatabases();
         }// !!
@@ -130,27 +106,21 @@ namespace WWProject
                "Doing so will also delete all entries and text files associated with this database.";
             string caption = "Delete Current Database";
             // Create MessageBox prompting user
-            DialogResult result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo);
             // If Yes, delete selected database and file directory
-            if (result == DialogResult.Yes)
+            if (UserInputHelper.YesNoMessage(message, caption))
             {
                 if (dictDatabases.ContainsKey(selectedDB))
                 {
-                    if (File.Exists(dictDatabases[selectedDB]))
+                    // if all database parts were successfully deleted,
+                    if (FileManagementHelper.DeleteDatabase(dictDatabases[selectedDB], selectedDB))
                     {
-                        File.Delete(dictDatabases[selectedDB]);
-                        if(Directory.Exists(Application.StartupPath + @"\" + selectedDB))
-                        {
-                            Directory.Delete(Application.StartupPath + @"\" + selectedDB,true);
-                        }
                         dictDatabases.Remove(selectedDB);
+                        // Update ListViewDatabases.
+                        SaveDatabases();
                     }
-                    else MessageBox.Show("Database file does not exist.");
                 }
                 else MessageBox.Show("Database does not exist.");
             }
-            // Update ListViewDatabases.
-            SaveDatabases();
         }
 
         private void AddDatabaseConnectionString(string name)
@@ -170,7 +140,7 @@ namespace WWProject
         private void ButtonNewDatabase_Click(object sender, EventArgs e)
         {
             // Check for special characters
-            if (SqliteDataAccess.CheckUserInput(TextboxNewDB.Text))
+            if (UserInputHelper.CheckUserInput(TextboxNewDB.Text))
             {
                 if (CheckForDuplicateName(TextboxNewDB.Text))
                 {
@@ -196,12 +166,7 @@ namespace WWProject
 
         private void ButtonDeleteDatabase_Click(object sender, EventArgs e)
         {
-            if (Directory.Exists(Application.StartupPath + @"\" + GetSelectedDatabase()))
-            {
-                MessageBox.Show(Application.StartupPath + @"\" + GetSelectedDatabase());
-                //Directory.Delete(Application.StartupPath + @"\" + GetSelectedDatabase(), true);
-            }
-            //DeleteSelectedDatabase();
+                DeleteSelectedDatabase();
         }
 
         private void ButtonOpen_Click(object sender, EventArgs e)
@@ -212,7 +177,6 @@ namespace WWProject
             
             // Edit App.config
             AddDatabaseConnectionString(selectedDB);
-            //AddDatabaseConnectionString("WorldDB");
             
             StartEditor(selectedDB); // check that it contains data type
         }
@@ -221,8 +185,13 @@ namespace WWProject
         {
             if(ListViewDatabases.SelectedItems.Count > 0)
             {
-                //ButtonDeleteDatabase.Enabled = true;
-            } //else ButtonDeleteDatabase.Enabled = false;
+                ButtonDeleteDatabase.Enabled = true;
+            } else ButtonDeleteDatabase.Enabled = false;
+        }
+
+        private void StartUp_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            //AppSetting.ClearConnectionString();
         }
     }
 }

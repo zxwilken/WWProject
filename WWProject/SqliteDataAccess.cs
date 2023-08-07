@@ -9,25 +9,6 @@ namespace WWProject
     internal class SqliteDataAccess
     {
 
-        /*public static List<string> LoadPP()
-        {
-            // Need to do  Ctrl+. on 'IdbConnection' and 'SQLiteConnection' to add a using statement for each
-            // This using statement makes sure that the Database connection is closed,
-            // whether it reaches the end of the statement or a crash
-            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-            {
-                var output = cnn.Query<string>("SELECT * FROM NPC",new DynamicParameters());
-                return output.ToList();
-            }
-        }*/
-
-        /*public static void SavePerson(List<string> entry)
-        {
-            using (IDbConnection cnn = new SQLiteConnection(LoadConnectionString()))
-            {
-                cnn.Execute("INSERT INTO NPC ( Name,)", entry);
-            }
-        }*/
 
         // Get DB connection string
         public static string LoadConnectionString(string id = "Default")
@@ -47,7 +28,6 @@ namespace WWProject
             cnn.Open();
             SQLiteCommand cmd = cnn.CreateCommand();
 
-            //cmd.CommandText = "SELECT name FROM sys.columns WHERE object_id = OBJECT_ID('" + tableName + "');";
             cmd.CommandText = "PRAGMA table_info('" + tableName + "');";
             dataReader = cmd.ExecuteReader();
             while (dataReader.Read())
@@ -58,7 +38,6 @@ namespace WWProject
             dataReader.Close();
             cmd.Dispose();
             cnn.Close();
-
             return columnNames;
         }
         // ###################################################################################################
@@ -217,7 +196,6 @@ namespace WWProject
             int entryID = AddToEntriesStart(newEntryName,GetTableID(categoryName),txtFileAddress);
             int tableEntryID = AddToCategoryTable(entryID,newEntryName,categoryName);
             AddToEntriesEnd(entryID,tableEntryID);
-
             return tableEntryID;
         }
         // ###################################################################################################
@@ -386,7 +364,6 @@ namespace WWProject
             cmd.Dispose();
             dataReader.Close();
             cnn.Close();
-
             return tableName;
         }
         // ###################################################################################################
@@ -472,7 +449,6 @@ namespace WWProject
             cmd.CommandText = "UPDATE LUTABLES SET NAME = '" + newName + "' WHERE NAME = '" + oldName + "';";
             cmd.ExecuteReader();
             cmd.Dispose();
-
             cnn.Close();
         }
         // ###################################################################################################
@@ -658,7 +634,6 @@ namespace WWProject
             cmd.ExecuteReader ();
             cmd.Dispose();
             cnn.Close();
-
         }
         // ###################################################################################################
 
@@ -698,16 +673,5 @@ namespace WWProject
             return entries;
         }
 
-
-        // Checks If user input is made of standard characters.
-        // ADD TO A SEPERATE CLASS
-        public static bool CheckUserInput(string userInput)
-        {
-            if (userInput.All(char.IsLetterOrDigit))
-            {
-                return true;
-            } else return false;
-        }
-        // ###################################################################################################
     }
 }
