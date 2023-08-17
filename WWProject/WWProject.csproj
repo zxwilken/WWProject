@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSetting.cs" />
+    <Compile Include="DataDisplayHelper.cs" />
     <Compile Include="Editor.cs">
       <SubType>Form</SubType>
     </Compile>

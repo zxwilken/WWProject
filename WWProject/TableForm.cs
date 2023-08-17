@@ -26,14 +26,14 @@ namespace WWProject
         private int contentY;
         private bool isNewTable;
         private TextBox newTableName;
-        private const int TEXTBOX_MAX_NUMBER = 8;
+        private const int TEXTBOX_MAX_NUMBER = 10;
 
         // Constructor
         public TableForm(Editor ed,bool creatingTable)
         {
             InitializeComponent();
 
-            contentY = LabelCategoryName.Bottom + 10;
+            contentY = 10;
             isNewTable = creatingTable;
             editorForm = ed;
             if (isNewTable)
@@ -51,7 +51,7 @@ namespace WWProject
                 originalTableName = "";
                 EditTableStartup();
             }
-            PanelName.Show();
+            PanelHeader.Show();
             PanelContent.Show();
         }
         // ###################################################################################################
@@ -72,22 +72,23 @@ namespace WWProject
             dropdownTables = new ComboBox();
             dropdownTables.Items.AddRange(SqliteDataAccess.GetAllTables(false).ToArray());
             dropdownTables.Size = new Size(160, 28);
-            dropdownTables.Font = new Font("Microsoft Sans Serif", 12);
+            dropdownTables.Font = new Font("Segoe UI", 12);
             //categoryNames.SelectedIndex = 0;
-            dropdownTables.Location = new Point(PanelName.Width / 2 - dropdownTables.Width / 2, LabelTableName.Bottom + 10);
+            //dropdownTables.Location = new Point(PanelHeader.Width / 2 - dropdownTables.Width / 2, LabelTableName.Bottom + 10);
+            dropdownTables.Location = new Point(PanelHeader.Width / 2 - dropdownTables.Width / 2, PanelHeader.Top - 5);
             dropdownTables.SelectedIndexChanged += ComboBoxCategoryNames_SelectedIndexChanged;
 
             // Button to edit the currently selected category name
             Button buttonEditName = new Button();
-            buttonEditName.Font = new Font("Microsoft Sans Serif", 12);
+            buttonEditName.Font = new Font("Segoe UI", 12);
             buttonEditName.Text = "Edit Name";
-            buttonEditName.Location = new Point(dropdownTables.Left - buttonEditName.Width - 20,LabelTableName.Bottom + 10);
+            buttonEditName.Location = new Point(dropdownTables.Left - buttonEditName.Width - 20, PanelHeader.Top - 5);
             buttonEditName.Height = 27;
             buttonEditName.Click += ButtonEditTableName_Click;
 
             // When user presses button to edit category name, display this
             tableNameToEdit = new TextBox();
-            tableNameToEdit.Font = new Font("Microsoft Sans Serif", 12);
+            tableNameToEdit.Font = new Font("Segoe UI", 12);
             tableNameToEdit.Location = dropdownTables.Location;
             tableNameToEdit.Size = dropdownTables.Size;
             tableNameToEdit.Visible = false;
@@ -95,38 +96,30 @@ namespace WWProject
 
             // Button to delete currently selected category
             buttonDeleteTable = new Button();
-            buttonDeleteTable.Font = new Font("Microsoft Sans Serif", 12);
+            buttonDeleteTable.Font = new Font("Segoe UI", 12);
             buttonDeleteTable.Text = "Delete Table";
-            buttonDeleteTable.Location = new Point(dropdownTables.Right + 20, LabelTableName.Bottom + 10);
+            buttonDeleteTable.Location = new Point(dropdownTables.Right + 20, PanelHeader.Top - 5);
             buttonDeleteTable.Height = 27;
             buttonDeleteTable.Enabled = false;
             buttonDeleteTable.Click += ButtonDeleteTable_Click;
 
             // Add Controls to panel
-            PanelName.Controls.Add(dropdownTables);
-            PanelName.Controls.Add(buttonEditName);
-            PanelName.Controls.Add(tableNameToEdit);
-            PanelName.Controls.Add(buttonDeleteTable);
+            PanelHeader.Controls.Add(dropdownTables);
+            PanelHeader.Controls.Add(buttonEditName);
+            PanelHeader.Controls.Add(tableNameToEdit);
+            PanelHeader.Controls.Add(buttonDeleteTable);
 
-
-            
         }
         // ###################################################################################################
 
 
-        // Adds text box containing to hold table name
+        // Adds text box containing table name
         private void AddTableNameTextBox(string tableName = "")
         {
-            Font newFont = new Font("Microsoft Sans Serif", 12);
-            TextBox richText = new TextBox();
-            richText.Font = newFont;
-            richText.Text = tableName;
-            richText.MinimumSize = new Size(160, 0);
-            richText.MaximumSize = new Size(160, 28);
-            richText.Anchor = AnchorStyles.None;
-            richText.Location = new Point(PanelName.Width/2 - richText.Width/2, LabelTableName.Bottom + 10);
+            TextBox richText = DataDisplayHelper.CreateTextBox(tableName);
+            richText.Location = new Point(PanelHeader.Width/2 - richText.Width/2, PanelHeader.Top - 5);
 
-            PanelName.Controls.Add(richText);
+            PanelHeader.Controls.Add(richText);
             newTableName = richText;
         }
         // ###################################################################################################
@@ -137,15 +130,8 @@ namespace WWProject
         // If Editing a table, creates a checkbox to toggle textbox on or off and button to delete associated column
         private TextBox AddColumnToList(string columnlName = "",bool disableBox = false )
         {
-            Font newFont = new Font("Microsoft Sans Serif", 12);
 
-            // TextBox Creation --------
-            TextBox richText = new TextBox();
-            richText.Text = columnlName;
-            richText.Font = newFont;
-            richText.MinimumSize = new Size(160, 0);
-            richText.MaximumSize = new Size(160, 28);
-            richText.Anchor = AnchorStyles.None;
+            TextBox richText = DataDisplayHelper.CreateTextBox(columnlName);
             richText.Location = new Point(PanelContent.Width / 2 - richText.Width / 2, contentY);
 
             if (disableBox) // Disable existing 
@@ -217,23 +203,29 @@ namespace WWProject
         }
         // ###################################################################################################
 
-        //
+        // Checks if new column names are suitable
         private bool CheckSubmittedColumns()
         {
             List<string> badInputs = new List<string>();
 
             for (int i = 0; i < newTableColumns.Count; i++)
             {
-                if (!UserInputHelper.CheckUserInput(newTableColumns[i].Text) || newTableColumns[i].Text == "")
+                if (!UserInputHelper.CheckUserInput(newTableColumns[i].Text) || newTableColumns[i].Text == "" || !UserInputHelper.CheckColumnNameSize(newTableColumns[i].Text))
                 {
                     badInputs.Add(newTableColumns[i].Text);
                     newTableColumns.RemoveAt(i);
                     continue;
                 }
-
-                if(newTableColumns[i].Text.ToLower() == "name")
+                // checks if new column names are the same as hidden column names
+                if (isNewTable) {
+                    if (!UserInputHelper.CheckIfHiddenName(newTableColumns[i].Text,newTableName.Text))
+                    {
+                        MessageBox.Show(newTableColumns[i].Text + " is automatically added. Please change.");
+                        return false;
+                    }
+                } else if (!UserInputHelper.CheckIfHiddenName(newTableColumns[i].Text, originalTableName))
                 {
-                    MessageBox.Show("'Name' is automatically added. Please change.");
+                    MessageBox.Show(newTableColumns[i].Text + " is automatically added. Please change.");
                     return false;
                 }
 
@@ -265,7 +257,7 @@ namespace WWProject
         }
         // ###################################################################################################
 
-        // 
+        //  
         private bool SubmitNewTable()
         {
             // If problem with edited columns, return false
@@ -299,7 +291,6 @@ namespace WWProject
             bool tableNameEdited = false;
             bool originalColumnsEdited = false;
             bool newColumnsEdited = false;
-            bool deletingColumns = false;
 
             List<string> badInputs = new List<string>();
             List<string> newGoodInputs = new List<string>();
@@ -314,9 +305,9 @@ namespace WWProject
                 {
                     return false;
                 }
-                if(tableNameToEdit.Text.ToLower() == "name")
+                if(UserInputHelper.CheckIfHiddenName(tableNameToEdit.Text,tableNameToEdit.Text))
                 {
-                    MessageBox.Show("Cannot use 'Name' as a Category name.");
+                    MessageBox.Show("Cannot use " + tableNameToEdit.Text + " as a Category name.");
                     return false;
                 }
                 if(tableNameToEdit.Text == "")
@@ -334,7 +325,7 @@ namespace WWProject
                 if (originalColumnsToDelete.Contains(i))
                     continue; 
    
-                if (!UserInputHelper.CheckUserInput(originalTableColumns.ElementAt(i).Value.Text) || originalTableColumns.ElementAt(i).Value.Text == "")
+                if (!UserInputHelper.CheckUserInput(originalTableColumns.ElementAt(i).Value.Text) || originalTableColumns.ElementAt(i).Value.Text == "" || !UserInputHelper.CheckColumnNameSize(originalTableColumns.ElementAt(i).Value.Text))
                 {
                     badInputs.Add(originalTableColumns.ElementAt(i).Value.Text);
                     continue;
@@ -445,13 +436,10 @@ namespace WWProject
 
             ComboBox table = sender as ComboBox;
             PanelContent.Controls.Clear();
-            contentY = LabelCategoryName.Bottom + 10;
+            //contentY = LabelCategoryName.Bottom + 10;
             originalColumnNames = SqliteDataAccess.GetColumnAmount(table.Text);
             originalColumnNames.RemoveRange(0, 3);
-            //foreach (string column in originalColumnNames)
-            //{
-            //    AddColumnToList(column, true);
-            //}
+
             for (int i = 0; i < originalColumnNames.Count; i++)
             {
                 AddColumnToList(originalColumnNames[i], true);
@@ -594,13 +582,12 @@ namespace WWProject
                 if (!SubmitEditedTable())
                     return;
             }
-
             this.Close();
         }
         // ###################################################################################################
 
 
-        // On Form close, enable Editor
+        // On Form close, enable Editor form
         private void TableForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             editorForm.UpdateDropdownAndDirectories();

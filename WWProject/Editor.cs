@@ -31,7 +31,7 @@ namespace WWProject
             databaseName = name;
             this.Text = "Editor: " + name;
             EditorStartUp();
-            
+            PanelDatabase.BringToFront();
         }
         // ###################################################################################################
 
@@ -106,16 +106,15 @@ namespace WWProject
             currentEntryName = newEntryName;
             currentTableName = categoryName;
 
-            SQLiteConnection cnn = new SQLiteConnection(SqliteDataAccess.LoadConnectionString());
-            cnn.Open();
-            SQLiteCommand cmd = cnn.CreateCommand();
-            cmd.CommandText = @"SELECT * FROM " + categoryName + " WHERE " + categoryName + "ID = " + tableID;
-            
-            DynamTableEntries(columnNames, cmd);
+            // Store entry data
+            List<string> entryData = SqliteDataAccess.GetEntryDataByCategoryID(categoryName, tableID);
 
-            cmd.Dispose();
-            cnn.Close();
-
+            // Clears dictionary before adding new set
+            dictDBEntryData.Clear();
+            // Clears panel of old displayed data
+            PanelDatabase.Controls.Clear();
+            dictDBEntryData = DataDisplayHelper.DynamDisplayEntries(columnNames, entryData, PanelDatabase);
+    
             // If new entry belongs to currently selected category,
             // update the entry list
             if (categoryName == ComboBoxCategories.Text)
@@ -140,15 +139,16 @@ namespace WWProject
         // ###################################################################################################
 
 
+        // REMOVE AFTER CONFIRMING EVERYTHING ELSE WORKS
         // Method to display all data from relevant DB entry
         private void DynamTableEntries(List<string> columnNames, SQLiteCommand cmd)
         {
             SQLiteDataReader dataReader = cmd.ExecuteReader();
 
-            int labelX = 100;
-            int textBoxX = 200;       // Find a better way than just hard coding it
+            int labelX = 50;
+            int textBoxX = 150;       // Find a better way than just hard coding it
             int contentY = 40;
-            Font newFont = new Font("Microsoft Sans Serif", 12);
+            Font newFont = new Font("Segoe UI", 12);
 
             // Clears dictionary before adding new set
             dictDBEntryData.Clear();
@@ -165,6 +165,7 @@ namespace WWProject
                     Label label = new Label();
                     label.Font = newFont;
                     label.Text = columnNames[i];
+                    label.Size = new Size(100,50);
                     label.Location = new Point(labelX, contentY);
 
                     RichTextBox richText = new RichTextBox();
@@ -190,12 +191,13 @@ namespace WWProject
                     PanelDatabase.Controls.Add(richText);
                     PanelDatabase.Show();
 
-                    contentY = richText.Bottom;
+                    contentY = richText.Bottom + 35;
+
                 }
             }
         }
         // ###################################################################################################
-
+        // REMOVE AFTER CONFIRMING EVERYTHING ELSE WORKS
 
         // Add new table to DB. Update category dropdown
         public void AddNewTable(string tableName, List<string> newColumns)
@@ -325,11 +327,11 @@ namespace WWProject
                     RichTextBoxMain.Text = File.ReadAllText(currentTxtFileAddress);
                 }
 
-                SQLiteConnection cnn = new SQLiteConnection(SqliteDataAccess.LoadConnectionString());
-                cnn.Open();
-                SQLiteCommand cmd = cnn.CreateCommand();
-                // create SQL statement to get all values from selected table
-
+                List<string> entryData = new List<string>();
+                // Clears dictionary before adding new set
+                dictDBEntryData.Clear();
+                // Clears panel of old displayed data
+                PanelDatabase.Controls.Clear();
                 // The 'value' of each 'key' contained in the Dictionary dictCategoryEntries is different
                 // depending on whether the Dictionary was filled based on ComboBoxCategories_SelectedIndexChanged or from TextboxSearch_KeyPress
                 // ComboBoxCategories_SelectedIndexChanged returns Entry Name and its [Table]ID
@@ -337,18 +339,15 @@ namespace WWProject
                 // Using Different command text is simple way instead of trying to do another SQL query
                 if (!searchAll)
                 {
-                    cmd.CommandText = @"SELECT * FROM " + currentTableName + " WHERE " + currentTableName + "ID = " + dictCategoryEntries[currentEntryName];
+                    entryData = SqliteDataAccess.GetEntryDataByCategoryID(currentTableName, dictCategoryEntries[currentEntryName]);
                 }
                 else
                 {
-                    cmd.CommandText = @"SELECT * FROM " + currentTableName + " WHERE EntryID = " + dictCategoryEntries[currentEntryName];
+                    entryData = SqliteDataAccess.GetEntryDataByEntryID(currentTableName, dictCategoryEntries[currentEntryName]);
                 }
 
-                // Send SQLite command
-                DynamTableEntries(columnNames, cmd);
+                dictDBEntryData = DataDisplayHelper.DynamDisplayEntries(columnNames, entryData, PanelDatabase);
 
-                cmd.Dispose();
-                cnn.Close();
             } catch (Exception ex)
             {
                 return;

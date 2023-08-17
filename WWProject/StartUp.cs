@@ -15,10 +15,9 @@ namespace WWProject
         {
             InitializeComponent();
             SetUpProgram();
-            ListViewDatabases.Font = new Font("Microsoft Sans Serif", 14);
+            ListViewDatabases.Font = new Font("Segoe UI", 14);
             ListViewDatabases.SelectedIndexChanged += ListViewDatabases_SelectedChange;
             //AppSetting.ClearConnectionString();
-            //MessageBox.Show(SqliteDataAccess.LoadConnectionString());
         }
 
         private void SetUpProgram()
@@ -41,7 +40,7 @@ namespace WWProject
             }
         }// !!
 
-
+        // Displays all databases in ListView
         private void DisplayDatabases()
         {
             ListViewDatabases.Items.Clear();
@@ -52,15 +51,7 @@ namespace WWProject
             }
         }// !!
 
-        // Creates new Editor form. Created on selection of database
-        private void StartEditor(string chosenDB)
-        {
-            Editor ed = new Editor(chosenDB,this);
-            ed.Show();
-            this.Enabled = false;
-            this.Visible = false;
-        }
-
+        // 
         public bool CheckForDuplicateName(string name)
         {
             string[] filePaths = FileManagementHelper.GetDatabases();
@@ -77,6 +68,7 @@ namespace WWProject
             } else return false;
         }// !!
 
+        //
         private void MakeNewDatabase(string name)
         {
             // Copy default DB to 'Databases' directory
@@ -85,6 +77,7 @@ namespace WWProject
             SaveDatabases();
         }// !!
 
+        // Returns text of selected ListView item
         private string GetSelectedDatabase()
         {
             if (ListViewDatabases.SelectedItems.Count > 0)
@@ -94,6 +87,7 @@ namespace WWProject
             else return null;
         }// !!
 
+        // 
         private void DeleteSelectedDatabase()
         {
             // Checks currently selected/highlighted DB,
@@ -123,12 +117,22 @@ namespace WWProject
             }
         }
 
-        private void AddDatabaseConnectionString(string name)
+        // 
+        private void ChangeDatabaseConnectionString(string name)
         {
             if (File.Exists(dictDatabases[name]))
             {
                 AppSetting.ChangeConnectionString(name);
             }
+        }
+
+        // Creates new Editor form. Created on selection of database
+        private void StartEditor(string chosenDB)
+        {
+            Editor ed = new Editor(chosenDB, this);
+            ed.Show();
+            this.Enabled = false;
+            this.Visible = false;
         }
 
         // *********************************************************************************************
@@ -137,10 +141,11 @@ namespace WWProject
         // =============================================================================================
         // *********************************************************************************************
 
+        // 
         private void ButtonNewDatabase_Click(object sender, EventArgs e)
         {
             // Check for special characters
-            if (UserInputHelper.CheckUserInput(TextboxNewDB.Text))
+            if (UserInputHelper.CheckUserInput(TextboxNewDB.Text) && UserInputHelper.CheckDBNameSize(TextboxNewDB.Text))
             {
                 if (CheckForDuplicateName(TextboxNewDB.Text))
                 {
@@ -164,11 +169,13 @@ namespace WWProject
             TextboxNewDB.Text = null;
         }// !!
 
+        // 
         private void ButtonDeleteDatabase_Click(object sender, EventArgs e)
         {
                 DeleteSelectedDatabase();
         }
 
+        // On click, changes connectionString to selected ListView item, then opens up the Editor
         private void ButtonOpen_Click(object sender, EventArgs e)
         {
             string selectedDB = GetSelectedDatabase();
@@ -176,11 +183,12 @@ namespace WWProject
                 return;
             
             // Edit App.config
-            AddDatabaseConnectionString(selectedDB);
+            ChangeDatabaseConnectionString(selectedDB);
             
             StartEditor(selectedDB); // check that it contains data type
         }
 
+        // Enable/Disable delete button
         private void ListViewDatabases_SelectedChange(object sender, EventArgs e)
         {
             if(ListViewDatabases.SelectedItems.Count > 0)

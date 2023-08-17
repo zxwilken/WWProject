@@ -669,9 +669,57 @@ namespace WWProject
             {
                 entries.Add(dataReader.GetString(0),dataReader.GetInt32(1));
             }
-
+            cnn.Close();
             return entries;
         }
 
+        // Return an entries data
+        public static List<string> GetEntryDataByCategoryID(string categoryName,int tableID)
+        {
+            List<string> entryData = new List<string>();
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            SQLiteDataReader dataReader;
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            cmd.CommandText = @"SELECT * FROM " + categoryName + " WHERE " + categoryName + "ID = " + tableID;
+            dataReader = cmd.ExecuteReader();
+            while (dataReader.Read())
+            {
+                for (int i = 0; i < dataReader.FieldCount; i++)
+                {
+                    entryData.Add(dataReader.GetValue(i).ToString());
+                }
+            }
+            
+
+            cmd.Dispose();
+            cnn.Close();
+            return entryData;
+        }
+
+        // return entry data
+        public static List<string> GetEntryDataByEntryID(string categoryName, int entryID)
+        {
+            List<string> entryData = new List<string>();
+            int count = 0;
+            SQLiteConnection cnn = new SQLiteConnection(LoadConnectionString());
+            SQLiteDataReader dataReader;
+            cnn.Open();
+            SQLiteCommand cmd = cnn.CreateCommand();
+
+            cmd.CommandText = @"SELECT * FROM " + categoryName + " WHERE EntryID = " + entryID;
+            dataReader = cmd.ExecuteReader();
+            while (dataReader.Read())
+            {
+                for (int i = 0; i < dataReader.FieldCount; i++)
+                {
+                    entryData.Add(dataReader.GetValue(i).ToString());
+                }
+            }
+            cmd.Dispose();
+            cnn.Close();
+            return entryData;
+        }
     }
 }
