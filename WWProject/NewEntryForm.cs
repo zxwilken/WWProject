@@ -19,26 +19,33 @@ namespace WWProject
             ComboBoxCategories.Items.AddRange(SqliteDataAccess.GetAllTables(false).ToArray());
         }
 
+        // Reactive Editor Form upon NewEntryForm closing
+        private void NewEntryForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            editor.Enabled = true;
+        }
+
+
         // Sends information needed to make a new Database entry
         // Whether a text file will be connected
         // What category will it belong to
         // New Entry Name
-        private void ButtonSubmit_Click(object sender, EventArgs e)
+        private void ButtonSubmit_Click_1(object sender, EventArgs e)
         {
-            if(ComboBoxCategories.Text == "")
+            if (ComboBoxCategories.Text == "")
             {
                 MessageBox.Show("Category Must Be Selected");
                 return;
             }
-            if(TextBoxEntryName.Text == "")
+            if (TextBoxEntryName.Text == "")
             {
                 MessageBox.Show("Entry Name Must Be Entered");
                 return;
             }
             bool badTypedInComboBox = true;
-            foreach(string item in ComboBoxCategories.Items)
+            foreach (string item in ComboBoxCategories.Items)
             {
-                if(item == ComboBoxCategories.Text)
+                if (item == ComboBoxCategories.Text)
                 {
                     badTypedInComboBox = false;
                     break;
@@ -50,9 +57,9 @@ namespace WWProject
                 return;
             }
             // Checks that Entered name does not exist as a category name
-            foreach(string table in SqliteDataAccess.GetAllTables(true))
+            foreach (string table in SqliteDataAccess.GetAllTables(true))
             {
-                if(TextBoxEntryName.Text == table)
+                if (TextBoxEntryName.Text == table)
                 {
                     MessageBox.Show("Entry Name: " + table + "\nAlready exists as a category name. Please select another.");
                     return;
@@ -67,15 +74,9 @@ namespace WWProject
                     return;
                 }
             }
-            editor.GetNewEntryValues(CheckBoxAddFile.Checked, ComboBoxCategories.Text,TextBoxEntryName.Text);
+            editor.GetNewEntryValues(CheckBoxAddFile.Checked, ComboBoxCategories.Text, TextBoxEntryName.Text);
             this.Close();
         }
         // ###################################################################################################
-
-        // Reactive Editor Form upon NewEntryForm closing
-        private void NewEntryForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            editor.Enabled = true;
-        }
     }
 }

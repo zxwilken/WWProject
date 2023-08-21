@@ -1,9 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WWProject
@@ -25,7 +21,7 @@ namespace WWProject
             string path = Application.StartupPath + @"\" + databaseName + @"\";
             if (!Directory.Exists(path))
             {
-                MessageBox.Show("Project's Root Directory\nDoes Not Exist\nCreating New Root Directory");
+                //MessageBox.Show("Project's Root Directory\nDoes Not Exist\nCreating New Root Directory");
                 Directory.CreateDirectory(path);
             }
             CreateFileSystem(path);
@@ -58,8 +54,8 @@ namespace WWProject
                     return true;
                 }
                 else {
-                    MessageBox.Show("File directory not found.");
-                    return false;
+                    //MessageBox.Show("File directory not found.");
+                    return true;
                 }
             } catch (UnauthorizedAccessException e) { 
                 MessageBox.Show($"Error deleting {path}: {e.Message}");
@@ -118,8 +114,12 @@ namespace WWProject
         // Copy default DB to 'Databases' directory
         public static void CreateNewDatabase(string name)
         {
-            string newDatabaseName = name + ".db";
             string startingPath = Application.StartupPath + @"\..\..\DefaultDatabaseCopy\Default.db";
+            if(!File.Exists(startingPath)){
+                MessageBox.Show("The default database file has been moved, deleted, or is unreachable.\nThe creation of a new database is not possible.");
+                return;
+            }
+            string newDatabaseName = name + ".db";
             string destinationPath = Application.StartupPath + @"\Databases\" + newDatabaseName;
             File.Copy(startingPath, destinationPath, false);
         }

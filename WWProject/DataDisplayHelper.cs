@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -11,7 +8,7 @@ namespace WWProject
     internal class DataDisplayHelper
     {
 
-        // Return a Dictionary<Label,RichTextBox>
+        // Displays a entry's data
         public static Dictionary<string, RichTextBox> DynamDisplayEntries(List<string> columnNames, List<string> columnData,Panel panel)
         {
             Dictionary<string,RichTextBox> entryData = new Dictionary<string,RichTextBox>();

@@ -9,7 +9,6 @@ namespace WWProject
     internal class SqliteDataAccess
     {
 
-
         // Get DB connection string
         public static string LoadConnectionString(string id = "Default")
         {

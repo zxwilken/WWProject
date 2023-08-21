@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows.Forms;
 
 namespace WWProject
@@ -18,7 +14,7 @@ namespace WWProject
         }
 
         // Creates a Yes/No MessageBox with given message
-        public static bool YesNoMessage(string message, string caption)
+        public static bool YesNoMessage(string message, string caption = "")
         {
             DialogResult result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo);
             // If Yes, delete selected database and file directory

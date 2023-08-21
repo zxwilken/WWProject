@@ -29,18 +29,18 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.ButtonSubmit = new System.Windows.Forms.Button();
             this.TextBoxEntryName = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.ComboBoxCategories = new System.Windows.Forms.ComboBox();
-            this.ButtonSubmit = new System.Windows.Forms.Button();
             this.CheckBoxAddFile = new System.Windows.Forms.CheckBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.label3 = new System.Windows.Forms.Label();
-            this.panel3 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -57,6 +57,27 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(318, 441);
             this.panel1.TabIndex = 0;
+            // 
+            // panel3
+            // 
+            this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(199)))), ((int)(((byte)(177)))), ((int)(((byte)(152)))));
+            this.panel3.Controls.Add(this.ButtonSubmit);
+            this.panel3.Location = new System.Drawing.Point(0, 404);
+            this.panel3.Margin = new System.Windows.Forms.Padding(0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(318, 37);
+            this.panel3.TabIndex = 12;
+            // 
+            // ButtonSubmit
+            // 
+            this.ButtonSubmit.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ButtonSubmit.Location = new System.Drawing.Point(115, 5);
+            this.ButtonSubmit.Name = "ButtonSubmit";
+            this.ButtonSubmit.Size = new System.Drawing.Size(85, 27);
+            this.ButtonSubmit.TabIndex = 7;
+            this.ButtonSubmit.Text = "Submit";
+            this.ButtonSubmit.UseVisualStyleBackColor = true;
+            this.ButtonSubmit.Click += new System.EventHandler(this.ButtonSubmit_Click_1);
             // 
             // TextBoxEntryName
             // 
@@ -107,16 +128,6 @@
             this.ComboBoxCategories.Size = new System.Drawing.Size(229, 29);
             this.ComboBoxCategories.TabIndex = 8;
             // 
-            // ButtonSubmit
-            // 
-            this.ButtonSubmit.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ButtonSubmit.Location = new System.Drawing.Point(115, 5);
-            this.ButtonSubmit.Name = "ButtonSubmit";
-            this.ButtonSubmit.Size = new System.Drawing.Size(85, 27);
-            this.ButtonSubmit.TabIndex = 7;
-            this.ButtonSubmit.Text = "Submit";
-            this.ButtonSubmit.UseVisualStyleBackColor = true;
-            // 
             // CheckBoxAddFile
             // 
             this.CheckBoxAddFile.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -145,21 +156,11 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(108, 5);
+            this.label3.Location = new System.Drawing.Point(78, 5);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(105, 25);
+            this.label3.Size = new System.Drawing.Size(167, 25);
             this.label3.TabIndex = 0;
-            this.label3.Text = "New Entry";
-            // 
-            // panel3
-            // 
-            this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(199)))), ((int)(((byte)(177)))), ((int)(((byte)(152)))));
-            this.panel3.Controls.Add(this.ButtonSubmit);
-            this.panel3.Location = new System.Drawing.Point(0, 404);
-            this.panel3.Margin = new System.Windows.Forms.Padding(0);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(318, 37);
-            this.panel3.TabIndex = 12;
+            this.label3.Text = "Create New Entry";
             // 
             // NewEntryForm
             // 
@@ -175,9 +176,9 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.NewEntryForm_FormClosed);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.panel3.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            this.panel3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

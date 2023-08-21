@@ -85,6 +85,7 @@ namespace WWProject
             buttonEditName.Location = new Point(dropdownTables.Left - buttonEditName.Width - 20, PanelHeader.Top - 5);
             buttonEditName.Height = 27;
             buttonEditName.Click += ButtonEditTableName_Click;
+            buttonEditName.BackColor = Color.WhiteSmoke;
 
             // When user presses button to edit category name, display this
             tableNameToEdit = new TextBox();
@@ -102,6 +103,7 @@ namespace WWProject
             buttonDeleteTable.Height = 27;
             buttonDeleteTable.Enabled = false;
             buttonDeleteTable.Click += ButtonDeleteTable_Click;
+            buttonDeleteTable.BackColor = Color.WhiteSmoke;
 
             // Add Controls to panel
             PanelHeader.Controls.Add(dropdownTables);
@@ -194,7 +196,7 @@ namespace WWProject
             deleteButton.Text = "Delete";
             deleteButton.Width = 50;
             deleteButton.Location = new Point(textBox.Left - deleteButton.Width - 15,textBox.Top);
-
+            deleteButton.BackColor = Color.WhiteSmoke;
             // add event method
             deleteButton.Click += ColumnDeleteButton_Click;
             PanelContent.Controls.Add(deleteButton);
@@ -226,6 +228,11 @@ namespace WWProject
                 } else if (!UserInputHelper.CheckIfHiddenName(newTableColumns[i].Text, originalTableName))
                 {
                     MessageBox.Show(newTableColumns[i].Text + " is automatically added. Please change.");
+                    return false;
+                }
+
+                if(newTableColumns[i].Text.ToLower() == "name")
+                {
                     return false;
                 }
 
@@ -436,7 +443,7 @@ namespace WWProject
 
             ComboBox table = sender as ComboBox;
             PanelContent.Controls.Clear();
-            //contentY = LabelCategoryName.Bottom + 10;
+            contentY =  10;
             originalColumnNames = SqliteDataAccess.GetColumnAmount(table.Text);
             originalColumnNames.RemoveRange(0, 3);
 

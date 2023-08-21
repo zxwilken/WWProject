@@ -16,7 +16,6 @@ C:\Users\zewil\OneDrive\Documents\Champlain\Champlain_Y2_S3_T1\SDEV-435\WWProjec
 C:\Users\zewil\OneDrive\Documents\Champlain\Champlain_Y2_S3_T1\SDEV-435\WWProject\WWProject\obj\Debug\WWProject.exe
 C:\Users\zewil\OneDrive\Documents\Champlain\Champlain_Y2_S3_T1\SDEV-435\WWProject\WWProject\obj\Debug\WWProject.pdb
 C:\Users\zewil\OneDrive\Documents\Champlain\Champlain_Y2_S3_T1\SDEV-435\WWProject\WWProject\obj\Debug\WWProject.NewEntryForm.resources
-C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Debug\WorldDB.db
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Debug\WWProject.exe.config
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Debug\WWProject.exe
 C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Debug\WWProject.pdb

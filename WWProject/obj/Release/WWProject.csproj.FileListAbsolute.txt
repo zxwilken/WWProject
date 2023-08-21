@@ -1,0 +1,17 @@
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Release\WWProject.exe.config
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Release\WWProject.exe
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Release\WWProject.pdb
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Release\System.Data.SQLite.dll
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\bin\Release\System.Data.SQLite.xml
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Release\WWProject.csproj.AssemblyReference.cache
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Release\WWProject.csproj.SuggestedBindingRedirects.cache
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Release\WWProject.Editor.resources
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Release\WWProject.NewEntryForm.resources
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Release\WWProject.Properties.Resources.resources
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Release\WWProject.StartUp.resources
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Release\WWProject.TableForm.resources
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Release\WWProject.csproj.GenerateResource.cache
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Release\WWProject.csproj.CoreCompileInputs.cache
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Release\WWProject.csproj.CopyComplete
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Release\WWProject.exe
+C:\Users\zewil\OneDrive\Documents\Zachs_stuff\SQL_Project\WWProject\WWProject\obj\Release\WWProject.pdb

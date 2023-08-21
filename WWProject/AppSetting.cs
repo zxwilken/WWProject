@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+// Updates App.config connectionString to the one for user chosen database
 namespace WWProject
 {
     internal class AppSetting

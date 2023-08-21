@@ -144,6 +144,7 @@
             // ButtonOpen
             // 
             this.ButtonOpen.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ButtonOpen.ForeColor = System.Drawing.SystemColors.ControlText;
             this.ButtonOpen.Location = new System.Drawing.Point(151, 361);
             this.ButtonOpen.Name = "ButtonOpen";
             this.ButtonOpen.Size = new System.Drawing.Size(75, 30);

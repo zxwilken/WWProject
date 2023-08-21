@@ -11,6 +11,7 @@ namespace WWProject
     {
         public string databaseName;
         StartUp startUP;
+        bool fullClose;
         // Dictionary with Column name as the key for the RichTextBox holding data
         private Dictionary<string, RichTextBox> dictDBEntryData = new Dictionary<string, RichTextBox>();
         // Dictionary holding Entry name(key) and its [Table]ID (value)
@@ -28,6 +29,7 @@ namespace WWProject
         {
             InitializeComponent();
             startUP = stUp;
+            fullClose = true;
             databaseName = name;
             this.Text = "Editor: " + name;
             EditorStartUp();
@@ -536,7 +538,22 @@ namespace WWProject
 
         private void Editor_FormClosed(object sender, FormClosedEventArgs e)
         {
+            if(fullClose)
             startUP.Close();
+        }
+
+        private void ButtonToStartUp_Click(object sender, EventArgs e)
+        {
+            string msg = "Are you sure you want to continue? Any unsaved data will be lost.\n\nContinue?";
+            string caption = "Close Editor";
+            // Ask user if if they are sure they want to pick new DB
+            if (UserInputHelper.YesNoMessage(msg, caption))
+            {
+                fullClose = false;
+                startUP.Enabled = true;
+                startUP.Visible = true;
+                this.Close();
+            }           
         }
         // ###################################################################################################
     }
